@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Emails de Soporte - PDI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap');        
+        /* Estilos Base */
+        body {
+            font-family: 'Montserrat', sans-serif;            background-color: #f8fafc;
+            margin: 0;
+            color: #000000;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Colores del Tema */
+        :root {
+            --primary: #5c068e;
+            --primary-dark: #4a0572;
+            --success: #16a34a;
+            --success-dark: #15803d;
+            --border: #e2e8f0;
+            --bg-input: #f8fafc;
+            --text-gray: #64748b;
+        }
+
+        .primary-color { color: var(--primary); }
+
+        /* Version Badge */
+        .navbar-subtitle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* 8px */
+        }
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: monospace;
+            background-color: rgba(0, 209, 255, 0.1);
+            color: #00D1FF;
+            border: 1px solid rgba(0, 209, 255, 0.3);
+            line-height: 1;
+        }
+        .version-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            background-color: #00D1FF;
+        }
+
+        /* Help Menu */
+        .help-menu {
+            position: relative;
+            padding-left: 1rem;
+            margin-left: 1rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .help-menu-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            background-color: transparent;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .help-menu-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .help-menu-button .icon-svg {
+            transition: transform 0.2s;
+        }
+        .help-dropdown {
+            position: absolute;
+            right: 0;
+            margin-top: 0.5rem;
+            width: 12rem; /* 192px */
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+            padding: 0.25rem 0;
+            color: #374151;
+            z-index: 60;
+            display: none; /* Hidden by default */
+        }
+        .help-dropdown-item {
+            width: 100%;
+            text-align: left;
+            padding: 0.625rem 1rem;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.875rem;
+        }
+        .help-dropdown-item:hover {
+            background-color: #f8fafc;
+        }
+        .help-dropdown-item .icon-svg {
+            color: var(--primary);
+        }
+
+        /* Nueva Cabecera */
+        .app-navbar {
+            background-color: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .app-navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4rem; /* 64px */
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* 12px */
+        }
+        .navbar-logo {
+            height: 2.5rem; /* 40px */
+            width: 2.5rem; /* 40px */
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem; /* 8px */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .navbar-logo svg { width: 24px; height: 24px; color: white; }
+        .navbar-title h1 { font-size: 1.125rem; font-weight: 700; margin: 0; letter-spacing: 0.025em; }
+        .navbar-title h2 { font-size: 0.875rem; font-weight: 400; margin: 0; color: rgba(255,255,255,0.8); }
+        .navbar-user-info { display: flex; align-items: center; gap: 0.75rem; }
+        .navbar-user-email { text-align: right; font-size: 0.875rem; font-weight: 700; }
+        .navbar-user-avatar {
+            height: 2.5rem; width: 2.5rem; border-radius: 9999px;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.875rem; font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .navbar-title, .navbar-user-email, .help-menu-text { display: none; }
+            .help-menu { margin-left: 0.5rem; padding-left: 0.5rem; }
+        }
+
+        .main-content {
+            padding: 1.5rem 1rem;
+        }
+
+        .main-content h1 {
+            font-size: 1.875rem; /* 30px */
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Help Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            max-width: 56rem; /* 896px */
+            width: 100%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .modal-title .icon-svg {
+            color: var(--primary);
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .modal-close-btn:hover {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            color: #475569;
+        }
+        .help-item { margin-bottom: 1.25rem; }
+        .help-item h4 { font-weight: 700; font-size: 1.125rem; color: #1e293b; margin: 0 0 0.25rem 0; display: flex; align-items: center; gap: 0.5rem; }
+        .help-item h4 .icon-svg { color: var(--primary-dark); width: 1rem; height: 1rem; }
+        .help-item p, .help-item ul { padding-left: 1.5rem; line-height: 1.6; margin: 0; }
+        .help-item ul { list-style-type: disc; padding-left: 2.5rem; }
+        .help-item li { margin-bottom: 0.5rem; }
+        .help-item code { background-color: #f1f5f9; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 0.8em; color: #334155; }
+
+        /* Grid Layout */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Paneles */
+        .card {
+            background: white;
+            padding:  15px;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        /* Formulario */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: ring 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(92, 6, 142, 0.2);
+        }
+
+        /* Grid del Formulario */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        @media (min-width: 768px) {
+            .form-row {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        /* Botones de Género */
+        .gender-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .gender-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .gender-checkbox {
+            display: none;
+        }
+
+        .gender-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .gender-label:hover {
+            background-color: #f1f5f9;
+        }
+
+        .gender-checkbox:checked + .gender-label {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Bloques Dinámicos */
+        .block-item {
+            margin-bottom: 15px;
+            padding-top: 15px;
+        }
+
+        .block-item:not(:first-child) {
+            border-top: 1px dashed var(--border);
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .block-number {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Botones Acción */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-add {
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .btn-add:hover { background: #e2e8f0; }
+
+        .btn-copy-visual {
+            background: var(--success);
+            color: white;
+            margin-top: 1rem;
+        }
+
+        .btn-copy-visual:hover { background: var(--success-dark); }
+
+        .btn-copy-html {
+            background: var(--primary);
+            color: white;
+            margin-top: 0.75rem;
+        }
+
+        .btn-copy-html:hover { background: var(--primary-dark); }
+
+        .btn-remove {
+            background: none;
+            color: #f87171;
+            padding: 4px;
+        }
+
+        .btn-remove:hover { color: #dc2626; }
+
+        /* Vista Previa */
+        .preview-area {
+            background-color: #f1f5f9;
+            background-image: 
+                linear-gradient(45deg, #f8fafc 25%, transparent 25%), 
+                linear-gradient(-45deg, #f8fafc 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f8fafc 75%), 
+                linear-gradient(-45deg, transparent 75%, #f8fafc 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            min-height: 700px;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Utilidades */
+        .icon-svg { width: 1.25rem; height: 1.25rem; }
+        .text-italic { font-style: italic; font-size: 0.875rem; color: #4b5563; }
+    </style>
+</head>
+<body>
+    <nav class="app-navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <div class="navbar-logo">
+                    <svg xmlns="http://www.w3.org/2001/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"></path>
+                    </svg>
+                </div>
+                <div class="navbar-title">
+                    <h1>Generador de Correos</h1>
+                    <div class="navbar-subtitle-wrapper">
+                        <h2>Soporte Vicerrectorado PDI</h2>
+                        <span class="version-badge">v1.0.0</span>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="navbar-user-info">
+                <div class="navbar-user-email" id="navbar-user-email"></div>
+                <div class="navbar-user-avatar" id="navbar-user-avatar"></div>
+                <!-- Help Menu -->
+                <div class="help-menu">
+                    <button id="helpMenuButton" class="help-menu-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <span class="help-menu-text">Ayuda</span>
+                        <svg id="helpChevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div id="helpDropdown" class="help-dropdown">
+                        <button id="openHelpModalBtn" class="help-dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                            Guía rápida
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="grid-main">
+            <!-- Panel de Edición -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg primary-color" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Redacción
+                    </h2>
+                    <button onclick="addBlock()" class="btn btn-add">
+                        <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" style="width: 1rem; height: 1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Añadir bloque
+                    </button>
+                </div>
+                
+                <div class="form-container">
+                    <div class="form-row form-group">
+                        <div>
+                            <label>Destinatario</label>
+                            <input type="text" id="clientName" oninput="generateEmail()" placeholder="Ej. Sr. García">
+                        </div>
+                        <div>
+                            <label>Sexo</label>
+                            <div class="gender-group">
+                                <div class="gender-option">
+                                    <input type="checkbox" id="checkMale" value="male" onchange="toggleGender('male')" class="gender-checkbox">
+                                    <label for="checkMale" class="gender-label">Hombre</label>
+                                </div>
+                                <div class="gender-option">
+                                    <input type="checkbox" id="checkFemale" value="female" onchange="toggleGender('female')" class="gender-checkbox">
+                                    <label for="checkFemale" class="gender-label">Mujer</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Técnico que firma</label>
+                        <select id="technicianSelect" onchange="generateEmail()"></select>
+                    </div>
+                    
+                    <div id="blocksContainer">
+                        <!-- Los bloques se generarán aquí -->
+                    </div>
+
+                    <div style="border-top: 1px solid #f1f5f9; padding-top: 1rem;">
+                        <button onclick="copyRichText()" class="btn btn-copy-visual" style="width:100%">
+                            <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            Copiar para pegar en email (Visual)
+                        </button>
+
+                        <button id="copyBtn" onclick="copyHTML()" class="btn btn-copy-html" style="width:100%">
+                            <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-5 4h5m-5 4h5m1-6v10" />
+                            </svg>
+                            Copiar código HTML (Avanzado)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Vista Previa -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" style="color: var(--success)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Vista Previa
+                    </h2>
+                </div>
+                <div id="previewArea" class="preview-area">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">
+        <svg id="toastIcon" xmlns="http://www.w3.org/2001/svg" class="icon-svg" style="color: #4ade80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="toastText">Copiado correctamente</span>
+    </div>
+
+    <div id="helpModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Guía rápida de uso
+                </h3>
+                <button id="closeHelpModalBtn" class="modal-close-btn" aria-label="Cerrar ayuda">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="help-item">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+                        1. Información del Destinatario
+                    </h4>
+                    <p>
+                        Introduce el nombre y tratamiento de la persona a la que te diriges (p. ej., "Sra. Pérez"). Selecciona "Hombre" o "Mujer" para ajustar el saludo a "Estimado" o "Estimada".
+                    </p>
+                </div>
+                <div class="help-item">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+                        2. Identificación del Técnico
+                    </h4>
+                    <p>
+                        Tu nombre se seleccionará automáticamente si has iniciado sesión. Este campo estará bloqueado y tu firma aparecerá en la vista previa.
+                    </p>
+                </div>
+                <div class="help-item">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+                        3. Construcción de Bloques de Respuesta
+                    </h4>
+                    <p>
+                        Cada bloque representa una respuesta a un punto concreto.
+                    </p>
+                    <ul>
+                        <li><strong>Citar texto (opcional):</strong> Pega el fragmento del correo del usuario al que respondes para dar contexto.</li>
+                        <li><strong>Respuesta a este punto:</strong> Escribe tu respuesta específica.</li>
+                        <li><strong>Añadir/Eliminar:</strong> Usa el botón <code>+ Añadir bloque</code> para añadir más respuestas o el icono de papelera para eliminarlas.</li>
+                    </ul>
+                </div>
+                <div class="help-item">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+                        4. Copiar el Correo
+                    </h4>
+                    <p>
+                        Una vez estés satisfecho con la vista previa, usa los botones de copiado:
+                    </p>
+                    <ul>
+                        <li><strong>Copiar para pegar en email (Visual):</strong> Recomendado para la mayoría de casos. Copia el correo con todo su formato para pegarlo directamente en Gmail, Outlook, etc.</li>
+                        <li><strong>Copiar código HTML (Avanzado):</strong> Copia el código HTML puro para usos más específicos.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let blockCount = 0;
+        let currentHtml = "";
+        const loggedInTechId = "<?= techId ?>";
+        const logoUrl = "https://lh3.googleusercontent.com/u/0/d/1Sv49AM7rZMGCqNqxCQfMCN5lHjiKiW7n=w1000-iv1";
+
+        const technicians = JSON.parse(`<?!= techniciansData ?>`);
+
+        function toggleGender(selected) {
+            const male = document.getElementById('checkMale');
+            const female = document.getElementById('checkFemale');
+
+            if (selected === 'male' && male.checked) {
+                female.checked = false;
+            } else if (selected === 'female' && female.checked) {
+                male.checked = false;
+            }
+            generateEmail();
+        }
+
+        function addBlock() {
+            blockCount++;
+            const container = document.getElementById('blocksContainer');
+            const blockDiv = document.createElement('div');
+            blockDiv.className = 'block-item';
+            blockDiv.id = `block-${blockCount}`;
+            
+            blockDiv.innerHTML = `
+                <div class="block-header">
+                    <span class="block-number">Bloque #${blockCount}</span>
+                    ${blockCount > 1 ? `
+                        <button onclick="removeBlock(${blockCount})" class="btn btn-remove">
+                            <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 0.75rem; color: #64748b;">Citar texto (opcional)</label>
+                    <textarea class="quote-input text-italic" rows="2" oninput="generateEmail()" placeholder="Texto de la candidatura..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 0.75rem; color: #64748b;">Respuesta a este punto</label>
+                    <textarea class="message-input" style="font-size: 0.875rem;" rows="4" oninput="generateEmail()" placeholder="Su respuesta específica..."></textarea>
+                </div>
+            `;
+            container.appendChild(blockDiv);
+            generateEmail();
+        }
+
+        function removeBlock(id) {
+            const block = document.getElementById(`block-${id}`);
+            if (block) {
+                block.remove();
+                generateEmail();
+            }
+        }
+
+        function generateEmail() {
+            const clientNameInput = document.getElementById('clientName').value.trim();
+            const isMale = document.getElementById('checkMale').checked;
+            const isFemale = document.getElementById('checkFemale').checked;
+            const selectedTechId = document.getElementById('technicianSelect').value;
+            const tech = technicians[selectedTechId];
+
+            // Si no se encuentra el técnico (p. ej., durante la carga inicial), no continuar.
+            if (!tech) {
+                document.getElementById('previewArea').innerHTML = '';
+                currentHtml = '';
+                return;
+            }
+            
+            let salutation = "Estimado/a";
+            if (isMale) salutation = "Estimado";
+            else if (isFemale) salutation = "Estimada";
+
+            const displayName = clientNameInput || "usuario/a";
+            
+            const blocks = document.querySelectorAll('.block-item');
+            let combinedContentHtml = '';
+
+            blocks.forEach((block, index) => {
+                const quoteInput = block.querySelector('.quote-input');
+                const messageInput = block.querySelector('.message-input');
+                
+                const quote = quoteInput ? quoteInput.value.trim() : '';
+                const message = messageInput ? (messageInput.value.trim() || '...') : '...';
+                
+                const formattedQuote = quote.replace(/\n/g, '<br>');
+                const formattedMessage = message.replace(/\n/g, '<br>');
+
+                const quotePart = quote ? `
+                    <div style="margin-bottom: 12px; padding-left: 15px; border-left: 2px solid #e2e8f0; color: #718096; font-style: italic; font-size: 14px;">
+                        "${formattedQuote}"
+                    </div>` : '';
+
+                combinedContentHtml += `
+                    <div style="${index > 0 ? 'margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 25px;' : ''}">
+                        ${quotePart}
+                        <div style="font-size: 16px;">
+                            ${formattedMessage}
+                        </div>
+                    </div>
+            
+                `;
+            });
+
+            const techNameHtml = tech.url 
+                ? `<a href="${tech.url}" style="color: #333333; text-decoration: none; border-bottom: 2px solid #5c068e;">${tech.fullName}</a>`
+                : `<span style="color: #333333;">${tech.fullName}</span>`;
+
+            const emailTemplate = `
+<div id="email-content" style="font-family: 'Montserrat', Arial, sans-serif; color: #333333; max-width: 600px; margin: 20px auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
+    <div style="background-color: #5c068e; padding: 15px; text-align: center;">
+        <div style="color: #ffffff; font-weight: bold; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;">
+            Soporte técnico </br>Vicerrectorado de Personal Docente e Investigador
+        </div>
+    </div>
+    
+    <div style="padding: 15px 35px 15px; line-height: 1.6;">
+        <p style="font-size: 16px; margin-top: 0; margin-bottom: 15px;">${salutation} <span style="font-weight: 600;">${displayName}</span>,</p>
+        
+        ${combinedContentHtml}
+
+        <p style="font-size: 16px;">Muchas gracias por su atención. Espero que haya encontrado la respuesta de utilidad, de lo contrario, no dude en contactarnos nuevamente.</p>
+        <p style="font-size: 16px;">Saludos y buen día.</p>
+    </div>
+
+    <!-- Sección de Firma -->
+    <div style="padding: 20px 30px; background-color: #f8fafc; border-top: 1px solid #edf2f7;">
+        <div style="margin-bottom: 0px;">
+            <div style="font-size: 15px; font-weight: bold;">
+                Atte.,
+                <span style="font-size: 16px; font-weight: bold;"> ${techNameHtml} 
+                <div style="font-size: 15px; color: #5c068e; font-weight: 600; margin-top: 5px;">Técnico del Vicerrectorado de PDI</div>  </span>
+            </div>
+            
+        </div>
+        
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+                <tbody>
+                    <tr>
+                        <td style="width: 240px; vertical-align: middle;">
+                            <img src="${logoUrl}" alt="Logo Vicerrectorado PDI Universidad de La Laguna" style="display: block; width: 240px; max-width: 100%; height: auto;">
+                        </td>
+                        <td style="width: 20px; padding: 0 0px;">
+                            <div style="border-left: 1px solid #5c068e; height: 60px;"></div>
+                        </td>                                                
+                        <td style="vertical-align: middle;">
+                            <div style="color: #475569; font-size: 11px; line-height: 1.5;">
+                                Pabellón de Gobierno,<br>
+                                C/ Padre Herrera s/n<br>
+                                38200, San Cristóbal de La Laguna<br>
+                                Santa Cruz de Tenerife - España
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="padding-top: 10px;">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+                                <tr>
+                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: center;">
+                                        <a href="https://www.ull.es" style="color: #5c068e; text-decoration: none; font-weight: bold;">ull.es</a>
+                                    </td>
+                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: left;">
+                                        <a href="https://sites.google.com/ull.edu.es/soporte-vicpdi/inicio" style="color: #5c068e; text-decoration: none; font-weight: bold;">Centro de ayuda</a>
+                                    </td>
+                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: right;">
+                                        <strong style="color: #5c068e;">T.</strong> (+34) 900 43 25 26
+                                    </td>
+                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: center;">
+                                        <strong style="color: #5c068e;">T.</strong> (+34) 922 31 94 77
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>`;
+
+            document.getElementById('previewArea').innerHTML = emailTemplate;
+            currentHtml = emailTemplate;
+        }
+
+        function copyRichText() {
+            const previewElement = document.getElementById('previewArea');
+            if (!previewElement) return;
+
+            const range = document.createRange();
+            range.selectNode(previewElement);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast("Contenido visual copiado (Listo para pegar)");
+                }
+            } catch (err) {
+                console.error('Error al copiar contenido visual:', err);
+            }
+            selection.removeAllRanges();
+        }
+
+        function copyHTML() {
+            if (!currentHtml) generateEmail();
+            const el = document.createElement('textarea');
+            el.value = currentHtml;
+            document.body.appendChild(el);
+            el.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) showToast("Código HTML copiado");
+            } catch (err) {
+                console.error('Error al copiar HTML:', err);
+            }
+            document.body.removeChild(el);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toastText');
+            toastText.textContent = message;
+            toast.style.opacity = '1';
+            toast.style.bottom = '2.5rem';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.bottom = '2rem';
+            }, 3000);
+        }
+
+        window.onload = () => {
+            const technicianSelect = document.getElementById('technicianSelect');
+
+            // Añadir el primer bloque de edición.
+            addBlock();
+
+            // Poblar el selector de técnicos dinámicamente
+            for (const id in technicians) {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = technicians[id].fullName;
+                technicianSelect.appendChild(option);
+            }
+
+            if (loggedInTechId && technicians[loggedInTechId]) {
+                technicianSelect.value = loggedInTechId;
+                technicianSelect.disabled = true;
+            }
+            
+            // Populate user info in navbar
+            const userEmail = loggedInTechId;
+            if (userEmail) {
+                document.getElementById('navbar-user-email').textContent = userEmail.split('@')[0];
+                document.getElementById('navbar-user-avatar').textContent = userEmail.charAt(0).toUpperCase();
+            }
+
+            // Volver a generar el email para asegurar que la firma correcta se carga.
+            generateEmail();
+        };
+
+        // Help Menu & Modal Logic
+        const helpMenuButton = document.getElementById('helpMenuButton');
+        const helpDropdown = document.getElementById('helpDropdown');
+        const helpChevron = document.getElementById('helpChevron');
+        const helpModal = document.getElementById('helpModal');
+        const openHelpModalBtn = document.getElementById('openHelpModalBtn');
+        const closeHelpModalBtn = document.getElementById('closeHelpModalBtn');
+
+        let isHelpDropdownOpen = false;
+
+        function toggleHelpDropdown(show) {
+            isHelpDropdownOpen = show;
+            helpDropdown.style.display = show ? 'block' : 'none';
+            helpChevron.style.transform = show ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        helpMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleHelpDropdown(!isHelpDropdownOpen);
+        });
+
+        document.addEventListener('click', () => {
+            if (isHelpDropdownOpen) {
+                toggleHelpDropdown(false);
+            }
+        });
+
+        function showHelpModal(show) {
+            helpModal.style.display = show ? 'flex' : 'none';
+        }
+
+        openHelpModalBtn.addEventListener('click', () => { showHelpModal(true); toggleHelpDropdown(false); });
+        closeHelpModalBtn.addEventListener('click', () => { showHelpModal(false); });
+        helpModal.addEventListener('click', (e) => { if (e.target === helpModal) { showHelpModal(false); } });
+    </script>
+</body>
+</html>
