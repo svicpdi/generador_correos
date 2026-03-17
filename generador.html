@@ -11,11 +11,15 @@
             font-family: 'Montserrat', sans-serif;            background-color: #f8fafc;
             margin: 0;
             color: #000000;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1280px;
             margin: 0 auto;
+            flex-grow: 1; /* Hace que el contenedor principal crezca para empujar el footer */
         }
 
         /* Colores del Tema */
@@ -244,6 +248,25 @@
         .help-item li { margin-bottom: 0.5rem; }
         .help-item code { background-color: #f1f5f9; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 0.8em; color: #334155; }
 
+        /* Footer de la App */
+        .app-footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .app-footer p {
+            margin: 0.25rem 0;
+        }
+        .app-footer a {
+            color: #4b5569;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .app-footer a:hover {
+            text-decoration: underline;
+        }
+
         /* Grid Layout */
         .grid-main {
             display: grid;
@@ -264,7 +287,24 @@
             border-radius: 1rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid var(--border);
-            height: fit-content;
+            height: fit-content; /* This is good */
+            display: flex; /* New */
+            flex-direction: column; /* New */
+        }
+
+        .form-container {
+            flex-grow: 1; /* New */
+        }
+
+        .action-footer {
+            position: sticky;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            padding: 1rem 15px;
+            margin: 1.5rem -15px -15px -15px; /* Top margin to separate from last element */
+            border-top: 1px solid var(--border);
+            border-radius: 0 0 1rem 1rem;
         }
 
         .card-header {
@@ -500,7 +540,7 @@
                     <h1>Generador de Correos</h1>
                     <div class="navbar-subtitle-wrapper">
                         <h2>Soporte Vicerrectorado PDI</h2>
-                        <span class="version-badge">v1.0.0</span>
+                        <span class="version-badge">v1.1.0</span>
                     </div>
                 </div>
             </div>
@@ -575,20 +615,35 @@
                         <!-- Los bloques se generarán aquí -->
                     </div>
 
-                    <div style="border-top: 1px solid #f1f5f9; padding-top: 1rem;">
-                        <button onclick="copyRichText()" class="btn btn-copy-visual" style="width:100%">
-                            <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                            </svg>
-                            Copiar para pegar en email (Visual)
-                        </button>
+                    <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                        <label>Despedida</label>
+                        <select id="closingSelect" onchange="generateEmail()">
+                            <option value="1" selected>Soporte 1 (Esperamos que...)</option>
+                            <option value="2">Soporte 2 (Un cordial saludo)</option>
+                            <option value="3">Petición 1 (Agradeciendo de antemano...)</option>
+                            <option value="4">Corta con agradecimiento (Gracias, saludos y buen día)</option>
+                            <option value="5">Corta sin agradecimiento (Saludos y buen día)</option>
+                            <option value="6">Sin despedida</option>
+                        </select>
+                    </div>
 
-                        <button id="copyBtn" onclick="copyHTML()" class="btn btn-copy-html" style="width:100%">
-                            <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-5 4h5m-5 4h5m1-6v10" />
-                            </svg>
-                            Copiar código HTML (Avanzado)
-                        </button>
+                    <!-- Botones de Acción Flotantes (CTA) -->
+                    <div class="action-footer">
+                        <div>
+                            <button onclick="copyRichText()" class="btn btn-copy-visual" style="width:100%">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                                Copiar para pegar en email (Visual)
+                            </button>
+
+                            <button id="copyBtn" onclick="copyHTML()" class="btn btn-copy-html" style="width:100%">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-5 4h5m-5 4h5m1-6v10" />
+                                </svg>
+                                Copiar código HTML (Avanzado)
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -675,9 +730,30 @@
                         <li><strong>Copiar código HTML (Avanzado):</strong> Copia el código HTML puro para usos más específicos.</li>
                     </ul>
                 </div>
+                <div class="help-item">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        5. Consejos y Solución de Problemas
+                    </h4>
+                    <ul>
+                        <li><strong>Firma automática:</strong> La aplicación detecta tu usuario de Google y asigna tu firma automáticamente. Si no aparece, prueba a recargar la página.</li>
+                        <li><strong>Privacidad:</strong> Los datos introducidos en este formulario no se guardan en ninguna base de datos, solo se procesan en tu navegador para generar la vista previa.</li>
+                        <li><strong>Reiniciar formulario:</strong> Para empezar un nuevo correo desde cero, simplemente recarga la página (F5).</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
+
+    <footer class="app-footer">
+        <p>Generador de Correos de Soporte</p>
+        <p>
+            © 2026 • Realizado por
+            <a href="https://vicleac-git.github.io/ReactCV/" target="_blank" rel="noopener noreferrer">
+                Víctor Leal Acosta
+            </a>
+        </p>
+    </footer>
 
     <script>
         let blockCount = 0;
@@ -787,10 +863,30 @@
                 `;
             });
 
-            const techNameHtml = tech.url 
-                ? `<a href="${tech.url}" style="color: #333333; text-decoration: none; border-bottom: 2px solid #5c068e;">${tech.fullName}</a>`
-                : `<span style="color: #333333;">${tech.fullName}</span>`;
+            const closingSelect = document.getElementById('closingSelect').value;
+            let closingHtml = '';
+            switch(closingSelect) {
+                case '1':
+                    closingHtml = `<p style="font-size: 16px;">Muchas gracias por su atención. Espero que la información facilitada le haya sido de utilidad, de lo contrario, no dude en contactarnos nuevamente.</p><p style="font-size: 16px;">Saludos y buen día.</p>`;
+                    break;
+                case '2':
+                    closingHtml = `<p style="font-size: 16px;">Muchas gracias por su atención. Un cordial saludo.</p>`;
+                    break;
+                case '3':
+                    closingHtml = `<p style="font-size: 16px;">Agradeciendo de antemano su colaboración, reciba un cordial saludo.</p>`;
+                    break;
+                case '4':
+                    closingHtml = `<p style="font-size: 16px;">Muchas gracias, saludos y buen día.</p>`;
+                    break;
+                case '5':
+                    closingHtml = `<p style="font-size: 16px;">Saludos y buen día.</p>`;
+                    break;
+                case '6':
+                    closingHtml = ''; // No closing
+                    break;
+            }
 
+            const techNameHtml = `<span style="color: #333333;">${tech.fullName}</span>`;
             const emailTemplate = `
 <div id="email-content" style="font-family: 'Montserrat', Arial, sans-serif; color: #333333; max-width: 600px; margin: 20px auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
     <div style="background-color: #5c068e; padding: 15px; text-align: center;">
@@ -803,9 +899,7 @@
         <p style="font-size: 16px; margin-top: 0; margin-bottom: 15px;">${salutation} <span style="font-weight: 600;">${displayName}</span>,</p>
         
         ${combinedContentHtml}
-
-        <p style="font-size: 16px;">Muchas gracias por su atención. Espero que haya encontrado la respuesta de utilidad, de lo contrario, no dude en contactarnos nuevamente.</p>
-        <p style="font-size: 16px;">Saludos y buen día.</p>
+        ${closingHtml}
     </div>
 
     <!-- Sección de Firma -->
@@ -818,49 +912,7 @@
             </div>
             
         </div>
-        
-        <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
-            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
-                <tbody>
-                    <tr>
-                        <td style="width: 240px; vertical-align: middle;">
-                            <img src="${logoUrl}" alt="Logo Vicerrectorado PDI Universidad de La Laguna" style="display: block; width: 240px; max-width: 100%; height: auto;">
-                        </td>
-                        <td style="width: 20px; padding: 0 0px;">
-                            <div style="border-left: 1px solid #5c068e; height: 60px;"></div>
-                        </td>                                                
-                        <td style="vertical-align: middle;">
-                            <div style="color: #475569; font-size: 11px; line-height: 1.5;">
-                                Pabellón de Gobierno,<br>
-                                C/ Padre Herrera s/n<br>
-                                38200, San Cristóbal de La Laguna<br>
-                                Santa Cruz de Tenerife - España
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" style="padding-top: 10px;">
-                            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
-                                <tr>
-                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: center;">
-                                        <a href="https://www.ull.es" style="color: #5c068e; text-decoration: none; font-weight: bold;">ull.es</a>
-                                    </td>
-                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: left;">
-                                        <a href="https://sites.google.com/ull.edu.es/soporte-vicpdi/inicio" style="color: #5c068e; text-decoration: none; font-weight: bold;">Centro de ayuda</a>
-                                    </td>
-                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: right;">
-                                        <strong style="color: #5c068e;">T.</strong> (+34) 900 43 25 26
-                                    </td>
-                                    <td style="width: 25%; font-size: 11px; color: #1e293b; text-align: center;">
-                                        <strong style="color: #5c068e;">T.</strong> (+34) 922 31 94 77
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+
     </div>
 </div>`;
 

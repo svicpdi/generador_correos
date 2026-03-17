@@ -58,6 +58,7 @@ Para desplegar o modificar este proyecto, necesitas configurar las siguientes **
 ### 1. `AUTHORIZED_USERS_DATA`
 
 - **Descripción**: Un único objeto JSON que define todos los usuarios autorizados y sus datos asociados. La clave de cada entrada es el **email del usuario**, y el valor es un objeto con su nombre completo (`fullName`) y una URL opcional (`url`) para la firma. Este objeto es la única fuente de verdad para la autorización y los datos de los técnicos.
+- **Descripción**: Un único objeto JSON que define todos los usuarios autorizados y sus datos asociados. La clave de cada entrada es el **email del usuario**, y el valor es un objeto con su nombre completo (`fullName`) y una URL opcional (`url`) para la firma. Este objeto es la única fuente de verdad para la autorización y los datos de los técnicos. **Es fundamental que adapte el contenido de esta propiedad con los datos reales de los técnicos que utilizarán la herramienta.**
 - **Ejemplo**:
   ```json
   {"usuario1@email.com": {"fullName": "Nombre y apellidos 1", "url": "https://example.com"}, "usuario2@email.com": {"fullName": "Nombre y apellidos 2", "url": ""}}
