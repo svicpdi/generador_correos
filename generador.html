@@ -540,7 +540,7 @@
                     <h1>Generador de Correos</h1>
                     <div class="navbar-subtitle-wrapper">
                         <h2>Soporte Vicerrectorado PDI</h2>
-                        <span class="version-badge">v1.1.0</span>
+                        <span class="version-badge">v1.1.1</span>
                     </div>
                 </div>
             </div>
@@ -886,7 +886,9 @@
                     break;
             }
 
-            const techNameHtml = `<span style="color: #333333;">${tech.fullName}</span>`;
+            const techNameHtml = tech.url 
+                ? `<a href="${tech.url}" target="_blank" style="color: #333333; text-decoration: none;">${tech.fullName}</a>`
+                : `<span style="color: #333333;">${tech.fullName}</span>`;
             const emailTemplate = `
 <div id="email-content" style="font-family: 'Montserrat', Arial, sans-serif; color: #333333; max-width: 600px; margin: 20px auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
     <div style="background-color: #5c068e; padding: 15px; text-align: center;">
