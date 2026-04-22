@@ -763,6 +763,11 @@
 
         const technicians = JSON.parse(`<?!= techniciansData ?>`);
 
+        // Diccionario de respuestas predefinidas
+        const PREDEFINED_RESPONSES = {
+            "Contacto telefónico": "Lamentamos comunicarle que este Servicio no cuenta con atención telefónica, sin embargo, estaremos encantados de atenderle por este medio."
+        };
+
         function toggleGender(selected) {
             const male = document.getElementById('checkMale');
             const female = document.getElementById('checkFemale');
@@ -779,6 +784,12 @@
             blockCount++;
             const container = document.getElementById('blocksContainer');
             const blockDiv = document.createElement('div');
+
+            // Generar las opciones del select de respuestas rápidas
+            const predefinedOptions = Object.keys(PREDEFINED_RESPONSES)
+                .map(key => `<option value="${key}">${key}</option>`)
+                .join('');
+
             blockDiv.className = 'block-item';
             blockDiv.id = `block-${blockCount}`;
             
@@ -798,12 +809,29 @@
                     <textarea class="quote-input text-italic" rows="2" oninput="generateEmail()" placeholder="Texto de la candidatura..."></textarea>
                 </div>
                 <div class="form-group">
+                    <label style="font-size: 0.75rem; color: #64748b;">Respuesta rápida</label>
+                    <select class="predefined-select" onchange="applyPredefinedResponse(this)" style="font-size: 0.875rem;">
+                        <option value="">-- Seleccionar una respuesta rápida --</option>
+                        ${predefinedOptions}
+                    </select>
+                </div>
+                <div class="form-group">
                     <label style="font-size: 0.75rem; color: #64748b;">Respuesta a este punto</label>
                     <textarea class="message-input" style="font-size: 0.875rem;" rows="4" oninput="generateEmail()" placeholder="Su respuesta específica..."></textarea>
                 </div>
             `;
             container.appendChild(blockDiv);
             generateEmail();
+        }
+
+        function applyPredefinedResponse(select) {
+            const value = select.value;
+            if (value && PREDEFINED_RESPONSES[value]) {
+                const block = select.closest('.block-item');
+                const textarea = block.querySelector('.message-input');
+                textarea.value = PREDEFINED_RESPONSES[value];
+                generateEmail();
+            }
         }
 
         function removeBlock(id) {
