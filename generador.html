@@ -540,7 +540,7 @@
                     <h1>Generador de Correos</h1>
                     <div class="navbar-subtitle-wrapper">
                         <h2>Soporte Vicerrectorado PDI</h2>
-                        <span class="version-badge">v1.2.0</span>
+                        <span class="version-badge">v1.3.0</span>
                     </div>
                 </div>
             </div>
@@ -617,7 +617,7 @@
 
                     <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
                         <label>Despedida</label>
-                        <select id="closingSelect" onchange="generateEmail()">
+                        <select id="closingSelect" onchange="updateClosingTextAndGenerate()">
                             <option value="1" selected>Soporte 1 (Esperamos que...)</option>
                             <option value="2">Soporte 2 (Un cordial saludo)</option>
                             <option value="3">Petición 1 (Agradeciendo de antemano...)</option>
@@ -625,6 +625,10 @@
                             <option value="5">Corta sin agradecimiento (Saludos y buen día)</option>
                             <option value="6">Sin despedida</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="customClosingTextarea" style="font-size: 0.75rem; color: #64748b;">Texto de despedida (editable)</label>
+                        <textarea id="customClosingTextarea" rows="4" oninput="generateEmail()" placeholder="Escribe tu despedida personalizada aquí..."></textarea>
                     </div>
 
                     <!-- Botones de Acción Flotantes (CTA) -->
@@ -765,8 +769,9 @@
 
         // Diccionario de respuestas predefinidas
         const PREDEFINED_RESPONSES = {
-            "Contacto telefónico": "Lamentamos comunicarle que este Servicio no cuenta con atención telefónica, sin embargo, estaremos encantados de atenderle por este medio."
-        };
+            "Contacto telefónico": "Lamentamos comunicarle que este Servicio no cuenta con atención telefónica, sin embargo, estaremos encantados de atenderle por este medio.",
+            "Email automático de la integración sin adjuntos": "A efectos de poder atender la solicitud, precisaríamos que nos hiciera llegar el archivo de Plantilla de Integración resultante tras la finalización del proceso de integración, así como el archivo individual (Plantilla de Integración) de aquellas candidaturas que presentaron incidencias durante el proceso de integración (estas están mencionadas en el cuerpo del email automático).",
+            "Redigir al fomulario": "Para que podamos estudiar y resolver su incidencia a la mayor brevedad, es necesario que cumplimente el formulario correspondiente según su rol. Con los datos que nos proporcionará, obtendremos todos los detalles técnicos indispensables para analizar su caso y le daremos una respuesta lo antes posible."        };
 
         function toggleGender(selected) {
             const male = document.getElementById('checkMale');
@@ -790,19 +795,21 @@
                 .map(key => `<option value="${key}">${key}</option>`)
                 .join('');
 
+            // Asegurarse de que el primer bloque siempre tenga el botón de eliminar deshabilitado
+            // y los subsiguientes lo tengan habilitado.
+            const removeButtonHtml = blockCount > 1 ? `
+                <button onclick="removeBlock(${blockCount})" class="btn btn-remove">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>` : '';
             blockDiv.className = 'block-item';
             blockDiv.id = `block-${blockCount}`;
             
             blockDiv.innerHTML = `
                 <div class="block-header">
                     <span class="block-number">Bloque #${blockCount}</span>
-                    ${blockCount > 1 ? `
-                        <button onclick="removeBlock(${blockCount})" class="btn btn-remove">
-                            <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-                    ` : ''}
+                    ${removeButtonHtml}
                 </div>
                 <div class="form-group">
                     <label style="font-size: 0.75rem; color: #64748b;">Citar texto (opcional)</label>
@@ -840,6 +847,31 @@
                 block.remove();
                 generateEmail();
             }
+        }
+
+        // Diccionario de despedidas predefinidas
+        const PREDEFINED_CLOSINGS = {
+            '1': "Muchas gracias por su atención. Espero que la información facilitada le haya sido de utilidad, de lo contrario, no dude en contactarnos nuevamente.\nSaludos y buen día.",
+            '2': "Muchas gracias por su atención. Un cordial saludo.",
+            '3': "Agradeciendo de antemano su colaboración, reciba un cordial saludo.",
+            '4': "Muchas gracias, saludos y buen día.",
+            '5': "Saludos y buen día.",
+            '6': "" // Sin despedida
+        };
+
+        function updateClosingTextAndGenerate() {
+            const closingSelect = document.getElementById('closingSelect');
+            const customClosingTextarea = document.getElementById('customClosingTextarea');
+            const selectedValue = closingSelect.value;
+
+            if (PREDEFINED_CLOSINGS[selectedValue] !== undefined) {
+                customClosingTextarea.value = PREDEFINED_CLOSINGS[selectedValue];
+            } else {
+                // Fallback or clear if an unknown value is somehow selected
+                customClosingTextarea.value = "";
+            }
+            // Always generate email after updating the textarea
+            generateEmail();
         }
 
         function generateEmail() {
@@ -891,28 +923,13 @@
                 `;
             });
 
-            const closingSelect = document.getElementById('closingSelect').value;
+            const customClosingText = document.getElementById('customClosingTextarea').value.trim();
             let closingHtml = '';
-            switch(closingSelect) {
-                case '1':
-                    closingHtml = `<p style="font-size: 16px;">Muchas gracias por su atención. Espero que la información facilitada le haya sido de utilidad, de lo contrario, no dude en contactarnos nuevamente.</p><p style="font-size: 16px;">Saludos y buen día.</p>`;
-                    break;
-                case '2':
-                    closingHtml = `<p style="font-size: 16px;">Muchas gracias por su atención. Un cordial saludo.</p>`;
-                    break;
-                case '3':
-                    closingHtml = `<p style="font-size: 16px;">Agradeciendo de antemano su colaboración, reciba un cordial saludo.</p>`;
-                    break;
-                case '4':
-                    closingHtml = `<p style="font-size: 16px;">Muchas gracias, saludos y buen día.</p>`;
-                    break;
-                case '5':
-                    closingHtml = `<p style="font-size: 16px;">Saludos y buen día.</p>`;
-                    break;
-                case '6':
-                    closingHtml = ''; // No closing
-                    break;
+            if (customClosingText) {
+                // Replace newlines with <br> for HTML rendering
+                closingHtml = `<p style="font-size: 16px;">${customClosingText.replace(/\n/g, '<br>')}</p>`;
             }
+            
 
             const techNameHtml = tech.url 
                 ? `<a href="${tech.url}" target="_blank" style="color: #333333; text-decoration: none;">${tech.fullName}</a>`
@@ -1022,6 +1039,9 @@
                 technicianSelect.disabled = true;
             }
             
+            // Initialize the custom closing textarea with the default selected closing
+            updateClosingTextAndGenerate();
+
             // Populate user info in navbar
             const userEmail = loggedInTechId;
             if (userEmail) {
