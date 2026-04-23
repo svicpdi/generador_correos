@@ -771,7 +771,19 @@
         const PREDEFINED_RESPONSES = {
             "Contacto telefónico": "Lamentamos comunicarle que este Servicio no cuenta con atención telefónica, sin embargo, estaremos encantados de atenderle por este medio.",
             "Email automático de la integración sin adjuntos": "A efectos de poder atender la solicitud, precisaríamos que nos hiciera llegar el archivo de Plantilla de Integración resultante tras la finalización del proceso de integración, así como el archivo individual (Plantilla de Integración) de aquellas candidaturas que presentaron incidencias durante el proceso de integración (estas están mencionadas en el cuerpo del email automático).",
-            "Redigir al fomulario": "Para que podamos estudiar y resolver su incidencia a la mayor brevedad, es necesario que cumplimente el formulario correspondiente según su rol. Con los datos que nos proporcionará, obtendremos todos los detalles técnicos indispensables para analizar su caso y le daremos una respuesta lo antes posible."        };
+            "Redigir al fomulario": "Para que podamos estudiar y resolver su incidencia a la mayor brevedad, es necesario que cumplimente el formulario correspondiente según su rol. Con los datos que nos proporcionará, obtendremos todos los detalles técnicos indispensables para analizar su caso y le daremos una respuesta lo antes posible.",
+            "Redirigir a Negociado": "Ponemos en copia a los compañeros del Negociado que podrán facilitarle más información. No se impaciente, le atenderán a la mayor brevedad posible.",
+            "Aclaración sistemas de exportación": `Permítanme que dé algo de contexto para que la respuesta se entienda mejor.
+            
+            La herramienta tiene dos métodos de exportación; uno individual (image.png) y uno general (image.png). El individual exporta la hoja (resumen o acta) desde la que se ejecuta y el general exporta toda la documentación de interés para la plaza (resumen & acta & baremaciones pormenorizadas).
+
+            La cuestión es que los esfuerzos de desarrollo se han centrado en optimizar el método general por una cuestión operativa. Si hace clic en este, no observará errores y obtendrá toda la documentación de un plumazo.
+
+            Ahora bien, si hace clic en el método individual mostrará el mensaje que menciona. No obstante, este no impide la exportación, sino que nos advierte de posibles errores en la misma (falsa premisa), dando al usuario la posibilidad de continuar o no. Es decir, aunque los hubiera se podría obtener.
+
+            En resumen, que el error no le engañe ya que falsamente se está advirtiendo de un error inexistente por obsolescencia del código de ejecución. Sin embargo, tenga a bien considerar subsanar primero los aspectos comentados en el correo previo antes de ejecutar la exportación general.`
+        
+        };
 
         function toggleGender(selected) {
             const male = document.getElementById('checkMale');
