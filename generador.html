@@ -532,6 +532,7 @@
         /* Utilidades */
         .icon-svg { width: 1.25rem; height: 1.25rem; }
         .text-italic { font-style: italic; font-size: 0.875rem; color: #4b5563; }
+
     </style>
 </head>
 <body>
@@ -547,7 +548,7 @@
                     <h1>Generador de Correos</h1>
                     <div class="navbar-subtitle-wrapper">
                         <h2>Soporte Vicerrectorado PDI</h2>
-                        <span class="version-badge">v1.4.0</span>
+                        <span class="version-badge">v1.4.1</span>
                     </div>
                 </div>
             </div>
@@ -584,12 +585,7 @@
                         </svg>
                         Redacción
                     </h2>
-                    <button onclick="addBlock()" class="btn btn-add">
-                        <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" style="width: 1rem; height: 1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Añadir bloque
-                    </button>
+
                 </div>
                 
                 <div class="form-container">
@@ -640,6 +636,12 @@
 
                     <!-- Botones de Acción Flotantes (CTA) -->
                     <div class="action-footer">
+                        <button onclick="addBlock()" class="btn btn-add" style="width:100%; margin-bottom: 1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" style="width: 1rem; height: 1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Añadir bloque
+                        </button>
                         <div>
                             <button onclick="copyRichText()" class="btn btn-copy-visual" style="width:100%">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
