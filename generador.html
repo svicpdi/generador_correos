@@ -280,6 +280,13 @@
             }
         }
 
+        .preview-card {
+            position: sticky;
+            top: 6rem; /* Adjust based on navbar height and desired spacing */
+            height: calc(100vh - 8rem); /* Adjust based on total vertical space needed */
+            overflow-y: auto;
+        }
+
         /* Paneles */
         .card {
             background: white;
@@ -540,7 +547,7 @@
                     <h1>Generador de Correos</h1>
                     <div class="navbar-subtitle-wrapper">
                         <h2>Soporte Vicerrectorado PDI</h2>
-                        <span class="version-badge">v1.3.0</span>
+                        <span class="version-badge">v1.4.0</span>
                     </div>
                 </div>
             </div>
@@ -653,7 +660,7 @@
             </div>
 
             <!-- Panel de Vista Previa -->
-            <div class="card">
+            <div class="card preview-card">
                 <div class="card-header">
                     <h2 class="card-title">
                         <svg xmlns="http://www.w3.org/2001/svg" class="icon-svg" style="color: var(--success)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
