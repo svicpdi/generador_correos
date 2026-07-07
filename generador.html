@@ -1406,8 +1406,13 @@
         document.getElementById('btnCancelModal').addEventListener('click', closeLinkModal);
         
         document.getElementById('btnSaveModal').addEventListener('click', () => {
-            const url = document.getElementById('modalLinkUrl').value.trim();
+            let url = document.getElementById('modalLinkUrl').value.trim();
             if (url) {
+                // Si la URL no contiene un protocolo conocido, se le antepone 'https://' por defecto
+                // para evitar que el navegador la procese como una URL relativa en GAS.
+                if (!/^(https?:\/\/|mailto:|tel:|ftp:\/\/)/i.test(url)) {
+                    url = 'https://' + url;
+                }
                 restoreSelection(savedSelection);
                 document.execCommand('createLink', false, url);
                 generateEmail();
@@ -1475,10 +1480,14 @@
                 }
                 finalImageSrc = pendingImageDataUrl;
             } else {
-                const urlVal = document.getElementById('modalImageUrl').value.trim();
+                let urlVal = document.getElementById('modalImageUrl').value.trim();
                 if (!urlVal) {
                     showToast("Por favor, introduce una dirección URL válida");
                     return;
+                }
+                // Prevención preventiva para URLs de imágenes sin protocolo
+                if (!/^(https?:\/\/)/i.test(urlVal)) {
+                    urlVal = 'https://' + urlVal;
                 }
                 finalImageSrc = urlVal;
             }
