@@ -580,6 +580,21 @@
             content: attr(placeholder);
             color: #94a3b8;
         }
+
+        /* Zona de arrastrar imagen del modal */
+        .drop-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8fafc;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        .drop-zone.dragover {
+            border-color: var(--primary);
+            background-color: rgba(92, 6, 142, 0.05);
+        }
     </style>
 </head>
 <body>
@@ -744,6 +759,49 @@
             <div style="display: flex; justify-content: flex-end; gap: 8px;">
                 <button type="button" id="btnCancelModal" style="background: transparent; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 6px; cursor: pointer; color: #64748b; font-size: 0.875rem;">Cancelar</button>
                 <button type="button" id="btnSaveModal" style="background: var(--primary); border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; color: white; font-size: 0.875rem; font-weight: 500;">Insertar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Imagen Personalizado (Soporta Carga Local y URL Externa) -->
+    <div id="customImageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 440px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); font-family: sans-serif;">
+            <h4 style="margin-top: 0; margin-bottom: 12px; color: #1e293b; font-size: 1.1rem; font-weight: 600;">Insertar Imagen</h4>
+            
+            <!-- Selector de Pestaña -->
+            <div style="display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                <button type="button" id="tabLocalImage" style="flex: 1; padding: 8px; border: none; background: #f1f5f9; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: #475569;">Cargar Archivo</button>
+                <button type="button" id="tabUrlImage" style="flex: 1; padding: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: #64748b;">Enlace URL</button>
+            </div>
+
+            <!-- Panel de Carga Local (Base64) -->
+            <div id="panelLocalImage" style="display: block; margin-bottom: 16px;">
+                <div id="dropZone" class="drop-zone">
+                    <i class="material-icons" style="font-size: 40px; color: #94a3b8; margin-bottom: 8px;">cloud_upload</i>
+                    <p style="margin: 0; font-size: 0.875rem; color: #475569; font-weight: 500;">Arrastra tu imagen aquí</p>
+                    <p style="margin: 4px 0 0 0; font-size: 0.75rem; color: #94a3b8;">o haz clic para explorar tus archivos</p>
+                    <input type="file" id="modalImageFile" accept="image/*" style="display: none;">
+                </div>
+                <!-- Miniatura de Previsualización local -->
+                <div id="localImagePreview" style="display: none; align-items: center; gap: 12px; margin-top: 12px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                    <img id="localPreviewImg" src="" style="max-width: 60px; max-height: 60px; border-radius: 4px; object-fit: cover;">
+                    <div style="flex-grow: 1; overflow: hidden;">
+                        <p id="localPreviewName" style="margin: 0; font-size: 0.75rem; font-weight: 600; color: #334155; white-space: nowrap; text-overflow: ellipsis;"></p>
+                        <p id="localPreviewSize" style="margin: 0; font-size: 0.7rem; color: #64748b;"></p>
+                    </div>
+                    <button type="button" id="btnRemoveLocalPreview" style="background: transparent; border: none; color: #ef4444; cursor: pointer; display: inline-flex;"><i class="material-icons" style="font-size: 18px;">delete</i></button>
+                </div>
+            </div>
+
+            <!-- Panel de Enlace URL -->
+            <div id="panelUrlImage" style="display: none; margin-bottom: 16px;">
+                <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 4px;">URL de la imagen externa</label>
+                <input type="text" id="modalImageUrl" placeholder="https://ejemplo.com/imagen.jpg" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; box-sizing: border-box; font-size: 0.875rem;">
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" id="btnCancelImageModal" style="background: transparent; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 6px; cursor: pointer; color: #64748b; font-size: 0.875rem;">Cancelar</button>
+                <button type="button" id="btnSaveImageModal" style="background: var(--primary); border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; color: white; font-size: 0.875rem; font-weight: 500;">Insertar</button>
             </div>
         </div>
     </div>
@@ -1139,6 +1197,78 @@
             document.getElementById('customLinkModal').style.display = 'none';
         }
 
+        // --- LÓGICA DE CONTROL DEL MODAL DE IMAGEN ---
+        let currentImageSourceType = 'local'; // 'local' o 'url'
+        let pendingImageDataUrl = '';
+
+        function openImageModal() {
+            const modal = document.getElementById('customImageModal');
+            document.getElementById('modalImageUrl').value = '';
+            document.getElementById('modalImageFile').value = '';
+            pendingImageDataUrl = '';
+            
+            // Ocultar previsualización previa
+            document.getElementById('localImagePreview').style.display = 'none';
+            document.getElementById('localPreviewImg').src = '';
+            
+            // Activar pestaña por defecto (Local)
+            switchImageTab('local');
+
+            modal.style.display = 'flex';
+        }
+
+        function closeImageModal() {
+            document.getElementById('customImageModal').style.display = 'none';
+        }
+
+        function switchImageTab(type) {
+            currentImageSourceType = type;
+            const tabLocal = document.getElementById('tabLocalImage');
+            const tabUrl = document.getElementById('tabUrlImage');
+            const panelLocal = document.getElementById('panelLocalImage');
+            const panelUrl = document.getElementById('panelUrlImage');
+
+            if (type === 'local') {
+                tabLocal.style.backgroundColor = '#f1f5f9';
+                tabLocal.style.color = '#475569';
+                tabUrl.style.backgroundColor = 'transparent';
+                tabUrl.style.color = '#64748b';
+                panelLocal.style.display = 'block';
+                panelUrl.style.display = 'none';
+            } else {
+                tabUrl.style.backgroundColor = '#f1f5f9';
+                tabUrl.style.color = '#475569';
+                tabLocal.style.backgroundColor = 'transparent';
+                tabLocal.style.color = '#64748b';
+                panelLocal.style.display = 'none';
+                panelUrl.style.display = 'block';
+                document.getElementById('modalImageUrl').focus();
+            }
+        }
+
+        // Procesar archivo seleccionado (Local)
+        function handleImageFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                showToast("Por favor, selecciona un archivo de imagen válido");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pendingImageDataUrl = e.target.result;
+                
+                // Mostrar contenedor de previsualización
+                document.getElementById('localPreviewImg').src = pendingImageDataUrl;
+                document.getElementById('localPreviewName').textContent = file.name;
+                
+                // Formatear tamaño del archivo
+                const sizeKb = (file.size / 1024).toFixed(1);
+                document.getElementById('localPreviewSize').textContent = `${sizeKb} KB`;
+                document.getElementById('localImagePreview').style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+
         window.onload = () => {
             const technicianSelect = document.getElementById('technicianSelect');
 
@@ -1225,12 +1355,7 @@
             if (cmd === 'createLink') {
                 openLinkModal();
             } else if (cmd === 'insertImage') {
-                const url = prompt('URL de la imagen:');
-                if (url) {
-                    restoreSelection(savedSelection);
-                    document.execCommand('insertImage', false, url);
-                    generateEmail();
-                }
+                openImageModal();
             } else {
                 restoreSelection(savedSelection);
                 document.execCommand(cmd, false, null);
@@ -1255,6 +1380,75 @@
             if (e.key === 'Enter') {
                 document.getElementById('btnSaveModal').click();
             }
+        });
+
+        // --- EVENTOS DEL MODAL DE IMÁGENES ---
+        document.getElementById('tabLocalImage').addEventListener('click', () => switchImageTab('local'));
+        document.getElementById('tabUrlImage').addEventListener('click', () => switchImageTab('url'));
+        document.getElementById('btnCancelImageModal').addEventListener('click', closeImageModal);
+
+        // Disparar explorador de archivos al pulsar en la zona dropZone
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('modalImageFile');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImageFile(e.target.files[0]);
+            }
+        });
+
+        // Eventos Drag and Drop en DropZone
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleImageFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        // Eliminar previsualización local
+        document.getElementById('btnRemoveLocalPreview').addEventListener('click', () => {
+            pendingImageDataUrl = '';
+            fileInput.value = '';
+            document.getElementById('localImagePreview').style.display = 'none';
+            document.getElementById('localPreviewImg').src = '';
+        });
+
+        // Insertar imagen en el texto del bloque activo
+        document.getElementById('btnSaveImageModal').addEventListener('click', () => {
+            let finalImageSrc = '';
+
+            if (currentImageSourceType === 'local') {
+                if (!pendingImageDataUrl) {
+                    showToast("Por favor, selecciona o arrastra una imagen primero");
+                    return;
+                }
+                finalImageSrc = pendingImageDataUrl;
+            } else {
+                const urlVal = document.getElementById('modalImageUrl').value.trim();
+                if (!urlVal) {
+                    showToast("Por favor, introduce una dirección URL válida");
+                    return;
+                }
+                finalImageSrc = urlVal;
+            }
+
+            // Recuperamos la selección y ejecutamos el formato nativo insertImage
+            restoreSelection(savedSelection);
+            document.execCommand('insertImage', false, finalImageSrc);
+            generateEmail();
+            closeImageModal();
         });
     </script>
 </body>
