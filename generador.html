@@ -617,7 +617,7 @@
                     <h1>Generador de Correos</h1>
                     <div class="navbar-subtitle-wrapper">
                         <h2>Soporte Vicerrectorado PDI</h2>
-                        <span class="version-badge">v1.5.1</span>
+                        <span class="version-badge">v1.6.0</span>
                     </div>
                 </div>
             </div>
@@ -907,23 +907,27 @@
         </p>
     </footer>
 
-    <script>
-        let blockCount = 0;
-        let currentHtml = "";
-        let savedSelection = null; // Guardará el rango de la selección del editor
-        const loggedInTechId = "<?= techId ?>";
-        const logoUrl = "https://lh3.googleusercontent.com/u/0/d/1Sv49AM7rZMGCqNqxCQfMCN5lHjiKiW7n=w1000-iv1";
+<script>
+    let blockCount = 0;
+    let currentHtml = "";
+    let savedSelection = null; // Guardará el rango de la selección del editor
+    const loggedInTechId = "<?= techId ?>";
+    const logoUrl = "https://lh3.googleusercontent.com/u/0/d/1Sv49AM7rZMGCqNqxCQfMCN5lHjiKiW7n=w1000-iv1";
 
-        const technicians = JSON.parse(`<?!= techniciansData ?>`);
+    const technicians = JSON.parse(`<?!= techniciansData ?>`);
 
-        // Diccionario de respuestas predefinidas
-        const PREDEFINED_RESPONSES = {
+    // Diccionario de respuestas predefinidas segmentadas por categorías
+    const PREDEFINED_RESPONSES = {
+        "POD": {
             "Contacto telefónico": "Lamentamos comunicarle que este Servicio no cuenta con atención telefónica, sin embargo, estaremos encantados de atenderle por este medio.",
+            "Descuentos en diciembre": "El Reglamento de Organización Docente en su artículo 21.2 dice; <i>Con carácter general, se considerará como fecha de efecto para las estimaciones de las reducciones de créditos en la docencia del PDI el 31 de diciembre del año anterior a la planificación, a excepción de las reducciones sindicales, que se actualizarán durante el curso académico</i>.\n\nEsto significa que cualquier cambio, mérito o circunstancia que afecte a su capacidad docente y dé derecho a una reducción de créditos debe estar consolidado y reconocido antes del 31 de diciembre del año previo para que compute en el siguiente curso académico. Aquellas modificaciones posteriores a esa fecha no podrán ser contempladas para la planificación general, salvo los casos excepcionales de créditos sindicales recogidos en la norma.\n\nEn este sentido, recuerde que, con carácter anual, se publica una instrucción con el calendario de las fases de la planificación académica y deberá prestar atención a las fases de 'Presentación de datos provisionales de capacidad y encargo docentes' (donde podrá ver sus datos de capacidad) y de 'Presentación de alegaciones a la capacidad docente (PDI) y al encargo docente (Centros)' (donde podrá presentar alegaciones si fuesen requeridas).\n\nEn definitiva, le recomendamos revisar detenidamente su capacidad provisional en los plazos establecidos por dicho calendario para que, en caso de detectar cualquier discrepancia o necesitar una subsanación de acuerdo con la fecha de corte mencionada, pueda formular la correspondiente alegación dentro del periodo habilitado."
+        },
+        "Baremación": {
             "Email automático de la integración sin adjuntos": "A efectos de poder atender la solicitud, precisaríamos que nos hiciera llegar el archivo de Plantilla de Integración resultante tras la finalización del proceso de integración, así como el archivo individual (Plantilla de Integración) de aquellas candidaturas que presentaron incidencias durante el proceso de integración (estas están mencionadas en el cuerpo del email automático).",
             "Redigir al fomulario": "Para que podamos estudiar y resolver su incidencia a la mayor brevedad, es necesario que cumplimente el formulario correspondiente según su rol. Con los datos que nos proporcionará, obtendremos todos los detalles técnicos indispensables para analizar su caso y le daremos una respuesta lo antes posible.",
             "Redirigir a Negociado": "Ponemos en copia a los compañeros del Negociado que podrán facilitarle más información. No se impaciente, le atenderán a la mayor brevedad posible.",
             "Aclaración sistemas de exportación": `Permítanme que dé algo de contexto para que la respuesta se entienda mejor.
-            
+
             La herramienta tiene dos métodos de exportación; uno individual (image.png) y uno general (image.png). El individual exporta la hoja (resumen o acta) desde la que se ejecuta y el general exporta toda la documentación de interés para la plaza (resumen & acta & baremaciones pormenorizadas).
 
             La cuestión es que los esfuerzos de desarrollo se han centrado en optimizar el método general por una cuestión operativa. Si hace clic en este, no observará errores y obtendrá toda la documentación de un plumazo.
@@ -932,173 +936,228 @@
 
             En resumen, que el error no le engañe ya que falsamente se está advirtiendo de un error inexistente por obsolescencia del código de ejecución. Sin embargo, tenga a bien considerar subsanar primero los aspectos comentados en el correo previo antes de ejecutar la exportación general.`,
             "Error 91 - Mac": "Este error se produce debido a una incompatibilidad del código de la ejecución en el entorno de Macintosh. Mientras lo investigamos, la solución parte de tratar de efectuar la integración en un entorno Windows. Para ello, si lo desea, puede compartirnos la documentación de la plaza y nosotros efectuaremos la integración por ustedes.",
-            "Descuentos en diciembre": "El Reglamento de Organización Docente en su artículo 21.2 dice; <i>Con carácter general, se considerará como fecha de efecto para las estimaciones de las reducciones de créditos en la docencia del PDI el 31 de diciembre del año anterior a la planificación, a excepción de las reducciones sindicales, que se actualizarán durante el curso académico</i>.\n\nEsto significa que cualquier cambio, mérito o circunstancia que afecte a su capacidad docente y dé derecho a una reducción de créditos debe estar consolidado y reconocido antes del 31 de diciembre del año previo para que compute en el siguiente curso académico. Aquellas modificaciones posteriores a esa fecha no podrán ser contempladas para la planificación general, salvo los casos excepcionales de créditos sindicales recogidos en la norma.\n\nEn este sentido, recuerde que, con carácter anual, se publica una instrucción con el calendario de las fases de la planificación académica y deberá prestar atención a las fases de 'Presentación de datos provisionales de capacidad y encargo docentes' (donde podrá ver sus datos de capacidad) y de 'Presentación de alegaciones a la capacidad docente (PDI) y al encargo docente (Centros)' (donde podrá presentar alegaciones si fuesen requeridas).\n\nEn definitiva, le recomendamos revisar detenidamente su capacidad provisional en los plazos establecidos por dicho calendario para que, en caso de detectar cualquier discrepancia o necesitar una subsanación de acuerdo con la fecha de corte mencionada, pueda formular la correspondiente alegación dentro del periodo habilitado."
-        };
-        function toggleGender(selected) {
-            const male = document.getElementById('checkMale');
-            const female = document.getElementById('checkFemale');
-
-            if (selected === 'male' && male.checked) {
-                female.checked = false;
-            } else if (selected === 'female' && female.checked) {
-                male.checked = false;
-            }
-            generateEmail();
+            "Valoración innecesaria": "El error proviene de la valoración de afinidad en una fila que no tiene mérito declarado, lo cual la herramienta asume como una acción innecesaria aunque bien pudiera tratarse de la pérdida de información. Si fuese el primer caso, bastaría con eliminar la valoración, si fuese el segundo, deberán introducir los datos de las secciones 3 y 4.",
+            "Sección 4 incompleta": "El error proviene de una declaración de méritos incompleta por parte de la candidatura. En este sentido, se han declarado méritos en la sección 3 pero no se han cumplimentado todos los datos necesarios para el cálculo de la sección 4. Esto provoca que no puedan obtenerse las puntuaciones y la mera valoración como 'No procede' no lo subsana. Para subsanarlo, deberán introducir todos los datos de la sección 4 de forma correcta",
+            "Sección 4 pero no 3": "El error proviene de una declaración de méritos incorrecta por parte de la candidatura. En este sentido, se ha cumplimentado la sección 4 pero no se ha indicado número de documento en la sección 3. Esto provoca un error de forma que la mera valoración como 'No procede' no lo subsana. Para subsanarlo, deberán actuar dependiendo del origen del error. Si es cierto que la candidatura no lo declaró, eliminen los datos de la sección 4 y la valoración de afinidad. Si por contra, se perdió el valor del número de documento, introdúzcanlo en la sección 3 y la herramienta calculará automáticamente las puntuaciones."
         }
+    };
 
-        function addBlock() {
-            blockCount++;
-            const container = document.getElementById('blocksContainer');
-            const blockDiv = document.createElement('div');
+    function toggleGender(selected) {
+        const male = document.getElementById('checkMale');
+        const female = document.getElementById('checkFemale');
 
-            // Generar las opciones del select de respuestas rápidas
-            const predefinedOptions = Object.keys(PREDEFINED_RESPONSES)
-                .map(key => `<option value="${key}">${key}</option>`)
-                .join('');
+        if (selected === 'male' && male.checked) {
+            female.checked = false;
+        } else if (selected === 'female' && female.checked) {
+            male.checked = false;
+        }
+        generateEmail();
+    }
 
-            // Asegurarse de que el primer bloque siempre tenga el botón de eliminar deshabilitado
-            // y los subsiguientes lo tengan habilitado.
-            const removeButtonHtml = blockCount > 1 ? `
-                <button onclick="removeBlock(${blockCount})" class="btn btn-remove">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </button>` : '';
-                
-            blockDiv.className = 'block-item';
-            blockDiv.id = `block-${blockCount}`;
+    // Genera el código HTML de las opciones de respuestas predefinidas (filtrado o agrupado)
+    function getPredefinedOptionsHtml(category = "") {
+        let html = '<option value="">-- Seleccionar una respuesta rápida --</option>';
+        if (category === "POD" || category === "Baremación") {
+            const group = PREDEFINED_RESPONSES[category];
+            for (const key in group) {
+                html += `<option value="${key}">${key}</option>`;
+            }
+        } else {
+            // Mostrar todas agrupadas visualmente por defecto
+            for (const cat in PREDEFINED_RESPONSES) {
+                html += `<optgroup label="${cat}">`;
+                for (const key in PREDEFINED_RESPONSES[cat]) {
+                    html += `<option value="${key}">${key}</option>`;
+                }
+                html += `</optgroup>`;
+            }
+        }
+        return html;
+    }
+
+    // Evento que se dispara al cambiar de categoría
+    function updatePredefinedOptions(selectElement) {
+        const block = selectElement.closest('.block-item');
+        const category = selectElement.value;
+        const predefinedSelect = block.querySelector('.predefined-select');
+        predefinedSelect.innerHTML = getPredefinedOptionsHtml(category);
+    }
+
+    function addBlock() {
+        blockCount++;
+        const container = document.getElementById('blocksContainer');
+        const blockDiv = document.createElement('div');
+
+        // Asegurarse de que el primer bloque siempre tenga el botón de eliminar deshabilitado
+        // y los subsiguientes lo tengan habilitado.
+        const removeButtonHtml = blockCount > 1 ? `
+            <button onclick="removeBlock(${blockCount})" class="btn btn-remove">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </button>` : '';
             
-            blockDiv.innerHTML = `
-                <div class="block-header">
-                    <span class="block-number">Bloque #${blockCount}</span>
-                    ${removeButtonHtml}
-                </div>
-                <div class="form-group">
-                    <label style="font-size: 0.75rem; color: #64748b;">Citar texto (opcional)</label>
-                    <textarea class="quote-input text-italic" rows="2" oninput="generateEmail()" placeholder="Texto de la candidatura..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label style="font-size: 0.75rem; color: #64748b;">Respuesta rápida</label>
-                    <select class="predefined-select" onchange="applyPredefinedResponse(this)" style="font-size: 0.875rem;">
-                        <option value="">-- Seleccionar una respuesta rápida --</option>
-                        ${predefinedOptions}
+        blockDiv.className = 'block-item';
+        blockDiv.id = `block-${blockCount}`;
+        blockDiv.innerHTML = `
+            <div class="block-header">
+                <span class="block-number">Bloque #${blockCount}</span>
+                ${removeButtonHtml}
+            </div>
+            <div class="form-group">
+                <label style="font-size: 0.75rem; color: #64748b;">Citar texto (opcional)</label>
+                <textarea class="quote-input text-italic" rows="2" oninput="generateEmail()" placeholder="Texto de la candidatura..."></textarea>
+            </div>
+
+            <!-- Nuevos Selects Segmentados -->
+            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 4px;">Categoría</label>
+                    <select class="category-select" onchange="updatePredefinedOptions(this)" style="font-size: 0.875rem; width: 100%; padding: 0.375rem; border-radius: 0.375rem; border: 1px solid #cbd5e1; outline: none; background-color: #fff;">
+                        <option value="">-- Todas --</option>
+                        <option value="POD">POD</option>
+                        <option value="Baremación">Baremación</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label style="font-size: 0.75rem; color: #64748b;">Respuesta a este punto</label>
-                    
-                    <div class="editor-toolbar custom-toolbar">
-                        <button type="button" class="editor-btn" data-cmd="bold" title="Negrita"><i class="material-icons" style="font-size: 18px;">format_bold</i></button>
-                        <button type="button" class="editor-btn" data-cmd="italic" title="Cursiva"><i class="material-icons" style="font-size: 18px;">format_italic</i></button>
-                        <button type="button" class="editor-btn" data-cmd="createLink" title="Enlace"><i class="material-icons" style="font-size: 18px;">link</i></button>
-                        <button type="button" class="editor-btn" data-cmd="insertImage" title="Imagen"><i class="material-icons" style="font-size: 18px;">image</i></button>
-                        <button type="button" class="editor-btn" data-cmd="removeFormat" title="Limpiar formato"><i class="material-icons" style="font-size: 18px;">clear</i></button>
+                <div style="flex: 2;">
+                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 4px;">Respuesta rápida</label>
+                    <select class="predefined-select" onchange="applyPredefinedResponse(this)" style="font-size: 0.875rem; width: 100%; padding: 0.375rem; border-radius: 0.375rem; border: 1px solid #cbd5e1; outline: none; background-color: #fff;">
+                        ${getPredefinedOptionsHtml()}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="font-size: 0.75rem; color: #64748b;">Respuesta a este punto</label>
+                <div class="editor-toolbar custom-toolbar">
+                    <button type="button" class="editor-btn" data-cmd="bold" title="Negrita"><i class="material-icons" style="font-size: 18px;">format_bold</i></button>
+                    <button type="button" class="editor-btn" data-cmd="italic" title="Cursiva"><i class="material-icons" style="font-size: 18px;">format_italic</i></button>
+                    <button type="button" class="editor-btn" data-cmd="createLink" title="Enlace"><i class="material-icons" style="font-size: 18px;">link</i></button>
+                    <button type="button" class="editor-btn" data-cmd="insertImage" title="Imagen"><i class="material-icons" style="font-size: 18px;">image</i></button>
+                    <button type="button" class="editor-btn" data-cmd="removeFormat" title="Limpiar formato"><i class="material-icons" style="font-size: 18px;">clear</i></button>
+                </div>
+                <div class="message-input" contenteditable="true" style="font-size: 0.875rem; min-height: 100px; padding: 0.75rem; outline: none;" oninput="generateEmail()" placeholder="Su respuesta específica..."></div>
+            </div>
+        `;
+
+        container.appendChild(blockDiv);
+        generateEmail();
+    }
+
+    function applyPredefinedResponse(select) {
+        const value = select.value;
+        if (!value) return;
+
+        const block = select.closest('.block-item');
+        const categorySelect = block.querySelector('.category-select');
+        const category = categorySelect.value;
+        
+        let responseText = "";
+
+        // Buscar en la categoría seleccionada o iterar sobre todo el mapa si no se eligió filtro
+        if (category && PREDEFINED_RESPONSES[category] && PREDEFINED_RESPONSES[category][value]) {
+            responseText = PREDEFINED_RESPONSES[category][value];
+        } else {
+            for (const cat in PREDEFINED_RESPONSES) {
+                if (PREDEFINED_RESPONSES[cat][value]) {
+                    responseText = PREDEFINED_RESPONSES[cat][value];
+                    break;
+                }
+            }
+        }
+
+        if (responseText) {
+            const textarea = block.querySelector('.message-input');
+            textarea.innerHTML = responseText.replace(/\n/g, '<br>');
+            generateEmail();
+        }
+    }
+
+    function removeBlock(id) {
+        const block = document.getElementById(`block-${id}`);
+        if (block) {
+            block.remove();
+            generateEmail();
+        }
+    }
+
+    // Diccionario de despedidas predefinidas
+    const PREDEFINED_CLOSINGS = {
+        '1': "Muchas gracias por su atención. Espero que la información facilitada le haya sido de utilidad, de lo contrario, no dude en contactarnos nuevamente.\\nSaludos y buen día.",
+        '2': "Muchas gracias por su atención. Un cordial saludo.",
+        '3': "Agradeciendo de antemano su colaboración, reciba un cordial saludo.",
+        '4': "Muchas gracias, saludos y buen día.",
+        '5': "Saludos y buen día.",
+        '6': "" // Sin despedida
+    };
+
+    function updateClosingTextAndGenerate() {
+        const closingSelect = document.getElementById('closingSelect');
+        const customClosingTextarea = document.getElementById('customClosingTextarea');
+        const selectedValue = closingSelect.value;
+
+        if (PREDEFINED_CLOSINGS[selectedValue] !== undefined) {
+            customClosingTextarea.value = PREDEFINED_CLOSINGS[selectedValue];
+        } else {
+            customClosingTextarea.value = "";
+        }
+        generateEmail();
+    }
+
+    function generateEmail() {
+        const clientNameInput = document.getElementById('clientName').value.trim();
+        const isMale = document.getElementById('checkMale').checked;
+        const isFemale = document.getElementById('checkFemale').checked;
+        const selectedTechId = document.getElementById('technicianSelect').value;
+        const tech = technicians[selectedTechId];
+
+        if (!tech) {
+            document.getElementById('previewArea').innerHTML = '';
+            currentHtml = '';
+            return;
+        }
+        
+        let salutation = "Estimado/a";
+        if (isMale) salutation = "Estimado";
+        else if (isFemale) salutation = "Estimada";
+        const displayName = clientNameInput || "usuario/a";
+        
+        const blocks = document.querySelectorAll('.block-item');
+        let combinedContentHtml = '';
+        blocks.forEach((block, index) => {
+            const quoteInput = block.querySelector('.quote-input');
+            const messageInput = block.querySelector('.message-input');
+            
+            const quote = quoteInput ? quoteInput.value.trim() : '';
+            const message = messageInput ? (messageInput.innerHTML.trim() || '...') : '...';
+            
+            const formattedQuote = quote.replace(/\n/g, '<br>');
+            const formattedMessage = message.replace(/\n/g, '<br>');
+            const quotePart = quote ? `
+                <div style="margin-bottom: 12px; padding-left: 15px; border-left: 2px solid #e2e8f0; color: #718096; font-style: italic; font-size: 14px;">
+                    "${formattedQuote}"
+                </div>` : '';
+            combinedContentHtml += `
+                <div style="${index > 0 ? 'margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 25px;' : ''}">
+                    ${quotePart}
+                    <div style="font-size: 16px;">
+                        ${formattedMessage}
                     </div>
-                    <div class="message-input" contenteditable="true" style="font-size: 0.875rem; min-height: 100px; padding: 0.75rem; outline: none;" oninput="generateEmail()" placeholder="Su respuesta específica..."></div>
                 </div>
             `;
-            container.appendChild(blockDiv);
-            generateEmail();
+        });
+
+        const customClosingText = document.getElementById('customClosingTextarea').value.trim();
+        let closingHtml = '';
+        if (customClosingText) {
+            closingHtml = `<p style="font-size: 16px;">${customClosingText.replace(/\n/g, '<br>')}</p>`;
         }
+        
+        const techNameHtml = tech.url 
+            ? `<a href="${tech.url}" target="_blank" style="color: #333333; text-decoration: none;">${tech.fullName}</a>`
+            : `<span style="color: #333333;">${tech.fullName}</span>`;
 
-        function applyPredefinedResponse(select) {
-            const value = select.value;
-            if (value && PREDEFINED_RESPONSES[value]) {
-                const block = select.closest('.block-item');
-                const textarea = block.querySelector('.message-input');
-                textarea.innerHTML = PREDEFINED_RESPONSES[value].replace(/\n/g, '<br>');
-                generateEmail();
-            }
-        }
-
-        function removeBlock(id) {
-            const block = document.getElementById(`block-${id}`);
-            if (block) {
-                block.remove();
-                generateEmail();
-            }
-        }
-
-        // Diccionario de despedidas predefinidas
-        const PREDEFINED_CLOSINGS = {
-            '1': "Muchas gracias por su atención. Espero que la información facilitada le haya sido de utilidad, de lo contrario, no dude en contactarnos nuevamente.\nSaludos y buen día.",
-            '2': "Muchas gracias por su atención. Un cordial saludo.",
-            '3': "Agradeciendo de antemano su colaboración, reciba un cordial saludo.",
-            '4': "Muchas gracias, saludos y buen día.",
-            '5': "Saludos y buen día.",
-            '6': "" // Sin despedida
-        };
-
-        function updateClosingTextAndGenerate() {
-            const closingSelect = document.getElementById('closingSelect');
-            const customClosingTextarea = document.getElementById('customClosingTextarea');
-            const selectedValue = closingSelect.value;
-
-            if (PREDEFINED_CLOSINGS[selectedValue] !== undefined) {
-                customClosingTextarea.value = PREDEFINED_CLOSINGS[selectedValue];
-            } else {
-                customClosingTextarea.value = "";
-            }
-            generateEmail();
-        }
-
-        function generateEmail() {
-            const clientNameInput = document.getElementById('clientName').value.trim();
-            const isMale = document.getElementById('checkMale').checked;
-            const isFemale = document.getElementById('checkFemale').checked;
-            const selectedTechId = document.getElementById('technicianSelect').value;
-            const tech = technicians[selectedTechId];
-
-            if (!tech) {
-                document.getElementById('previewArea').innerHTML = '';
-                currentHtml = '';
-                return;
-            }
-            
-            let salutation = "Estimado/a";
-            if (isMale) salutation = "Estimado";
-            else if (isFemale) salutation = "Estimada";
-
-            const displayName = clientNameInput || "usuario/a";
-            
-            const blocks = document.querySelectorAll('.block-item');
-            let combinedContentHtml = '';
-
-            blocks.forEach((block, index) => {
-                const quoteInput = block.querySelector('.quote-input');
-                const messageInput = block.querySelector('.message-input');
-                
-                const quote = quoteInput ? quoteInput.value.trim() : '';
-                const message = messageInput ? (messageInput.innerHTML.trim() || '...') : '...';
-                
-                const formattedQuote = quote.replace(/\n/g, '<br>');
-                const formattedMessage = message.replace(/\n/g, '<br>');
-
-                const quotePart = quote ? `
-                    <div style="margin-bottom: 12px; padding-left: 15px; border-left: 2px solid #e2e8f0; color: #718096; font-style: italic; font-size: 14px;">
-                        "${formattedQuote}"
-                    </div>` : '';
-
-                combinedContentHtml += `
-                    <div style="${index > 0 ? 'margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 25px;' : ''}">
-                        ${quotePart}
-                        <div style="font-size: 16px;">
-                            ${formattedMessage}
-                        </div>
-                    </div>
-                `;
-            });
-
-            const customClosingText = document.getElementById('customClosingTextarea').value.trim();
-            let closingHtml = '';
-            if (customClosingText) {
-                closingHtml = `<p style="font-size: 16px;">${customClosingText.replace(/\n/g, '<br>')}</p>`;
-            }
-            
-            const techNameHtml = tech.url 
-                ? `<a href="${tech.url}" target="_blank" style="color: #333333; text-decoration: none;">${tech.fullName}</a>`
-                : `<span style="color: #333333;">${tech.fullName}</span>`;
-            const emailTemplate = `
+        const emailTemplate = `
 <div id="email-content" style="font-family: 'Montserrat', Arial, sans-serif; color: #333333; max-width: 600px; margin: 20px auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
     <div style="background-color: #5c068e; padding: 15px; text-align: center;">
         <div style="color: #ffffff; font-weight: bold; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;">
@@ -1116,7 +1175,6 @@
         ${combinedContentHtml}
         ${closingHtml}
     </div>
-
     <!-- Sección de Firma -->
     <div style="padding: 20px 30px; background-color: #f8fafc; border-top: 1px solid #edf2f7;">
         <div style="margin-bottom: 0px;">
@@ -1129,382 +1187,363 @@
     </div>
 </div>`;
 
-            document.getElementById('previewArea').innerHTML = emailTemplate;
-            currentHtml = emailTemplate;
-        }
+        document.getElementById('previewArea').innerHTML = emailTemplate;
+        currentHtml = emailTemplate;
+    }
 
-        function copyRichText() {
-            const previewElement = document.getElementById('previewArea');
-            if (!previewElement) return;
-
-            const range = document.createRange();
-            range.selectNode(previewElement);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showToast("Contenido visual copiado (Listo para pegar)");
-                }
-            } catch (err) {
-                console.error('Error al copiar contenido visual:', err);
+    function copyRichText() {
+        const previewElement = document.getElementById('previewArea');
+        if (!previewElement) return;
+        const range = document.createRange();
+        range.selectNode(previewElement);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showToast("Contenido visual copiado (Listo para pegar)");
             }
-            selection.removeAllRanges();
+        } catch (err) {
+            console.error('Error al copiar contenido visual:', err);
         }
+        selection.removeAllRanges();
+    }
 
-        function copyHTML() {
-            if (!currentHtml) generateEmail();
-            const el = document.createElement('textarea');
-            el.value = currentHtml;
-            document.body.appendChild(el);
-            el.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) showToast("Código HTML copiado");
-            } catch (err) {
-                console.error('Error al copiar HTML:', err);
+    function copyHTML() {
+        if (!currentHtml) generateEmail();
+        const el = document.createElement('textarea');
+        el.value = currentHtml;
+        document.body.appendChild(el);
+        el.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) showToast("Código HTML copiado");
+        } catch (err) {
+            console.error('Error al copiar HTML:', err);
+        }
+        document.body.removeChild(el);
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toastText');
+        toastText.textContent = message;
+        toast.style.opacity = '1';
+        toast.style.bottom = '2.5rem';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.bottom = '2rem';
+        }, 3000);
+    }
+
+    // --- FUNCIONES DE SELECCIÓN DE TEXTO (IMPRESCINDIBLES PARA EL EDITOR) ---
+    function saveSelection() {
+        if (window.getSelection) {
+            const sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                return sel.getRangeAt(0);
             }
-            document.body.removeChild(el);
         }
+        return null;
+    }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastText = document.getElementById('toastText');
-            toastText.textContent = message;
-            toast.style.opacity = '1';
-            toast.style.bottom = '2.5rem';
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.bottom = '2rem';
-            }, 3000);
-        }
-
-        // --- FUNCIONES DE SELECCIÓN DE TEXTO (IMPRESCINDIBLES PARA EL EDITOR) ---
-        function saveSelection() {
+    function restoreSelection(range) {
+        if (range) {
             if (window.getSelection) {
                 const sel = window.getSelection();
-                if (sel.getRangeAt && sel.rangeCount) {
-                    return sel.getRangeAt(0);
-                }
-            }
-            return null;
-        }
-
-        function restoreSelection(range) {
-            if (range) {
-                if (window.getSelection) {
-                    const sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
+                sel.removeAllRanges();
+                sel.addRange(range);
             }
         }
+    }
 
-        // --- LÓGICA DE CONTROL DEL MODAL DE ENLACE ---
-        function openLinkModal() {
-            const modal = document.getElementById('customLinkModal');
-            const input = document.getElementById('modalLinkUrl');
-            input.value = ''; // Limpiar campo
-            modal.style.display = 'flex';
-            input.focus();
-        }
+    // --- LÓGICA DE CONTROL DEL MODAL DE ENLACE ---
+    function openLinkModal() {
+        const modal = document.getElementById('customLinkModal');
+        const input = document.getElementById('modalLinkUrl');
+        input.value = ''; // Limpiar campo
+        modal.style.display = 'flex';
+        input.focus();
+    }
 
-        function closeLinkModal() {
-            document.getElementById('customLinkModal').style.display = 'none';
-        }
+    function closeLinkModal() {
+        document.getElementById('customLinkModal').style.display = 'none';
+    }
 
-        // --- LÓGICA DE CONTROL DEL MODAL DE IMAGEN ---
-        let currentImageSourceType = 'local'; // 'local' o 'url'
-        let pendingImageDataUrl = '';
+    // --- LÓGICA DE CONTROL DEL MODAL DE IMAGEN ---
+    let currentImageSourceType = 'local'; // 'local' o 'url'
+    let pendingImageDataUrl = '';
 
-        function openImageModal() {
-            const modal = document.getElementById('customImageModal');
-            document.getElementById('modalImageUrl').value = '';
-            document.getElementById('modalImageFile').value = '';
-            document.getElementById('modalImageSizePreset').value = '100%';
-            pendingImageDataUrl = '';
-            
-            // Ocultar previsualización previa
-            document.getElementById('localImagePreview').style.display = 'none';
-            document.getElementById('localPreviewImg').src = '';
-            
-            // Activar pestaña por defecto (Local)
-            switchImageTab('local');
-
-            modal.style.display = 'flex';
-        }
-
-        function closeImageModal() {
-            document.getElementById('customImageModal').style.display = 'none';
-        }
-
-        function switchImageTab(type) {
-            currentImageSourceType = type;
-            const tabLocal = document.getElementById('tabLocalImage');
-            const tabUrl = document.getElementById('tabUrlImage');
-            const panelLocal = document.getElementById('panelLocalImage');
-            const panelUrl = document.getElementById('panelUrlImage');
-
-            if (type === 'local') {
-                tabLocal.style.backgroundColor = '#f1f5f9';
-                tabLocal.style.color = '#475569';
-                tabUrl.style.backgroundColor = 'transparent';
-                tabUrl.style.color = '#64748b';
-                panelLocal.style.display = 'block';
-                panelUrl.style.display = 'none';
-            } else {
-                tabUrl.style.backgroundColor = '#f1f5f9';
-                tabUrl.style.color = '#475569';
-                tabLocal.style.backgroundColor = 'transparent';
-                tabLocal.style.color = '#64748b';
-                panelLocal.style.display = 'none';
-                panelUrl.style.display = 'block';
-                document.getElementById('modalImageUrl').focus();
-            }
-        }
-
-        // Procesar archivo seleccionado (Local)
-        function handleImageFile(file) {
-            if (!file || !file.type.startsWith('image/')) {
-                showToast("Por favor, selecciona un archivo de imagen válido");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                pendingImageDataUrl = e.target.result;
-                
-                // Mostrar contenedor de previsualización
-                document.getElementById('localPreviewImg').src = pendingImageDataUrl;
-                document.getElementById('localPreviewName').textContent = file.name;
-                
-                // Formatear tamaño del archivo
-                const sizeKb = (file.size / 1024).toFixed(1);
-                document.getElementById('localPreviewSize').textContent = `${sizeKb} KB`;
-                document.getElementById('localImagePreview').style.display = 'flex';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        window.onload = () => {
-            const technicianSelect = document.getElementById('technicianSelect');
-
-            // Añadir el primer bloque de edición.
-            addBlock();
-
-            // Poblar el selector de técnicos dinámicamente
-            for (const id in technicians) {
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = technicians[id].fullName;
-                technicianSelect.appendChild(option);
-            }
-
-            if (loggedInTechId && technicians[loggedInTechId]) {
-                technicianSelect.value = loggedInTechId;
-                technicianSelect.disabled = true;
-            }
-            
-            // Inicializar texto de despedida
-            updateClosingTextAndGenerate();
-
-            // Rellenar información de usuario en navbar
-            const userEmail = loggedInTechId;
-            if (userEmail) {
-                document.getElementById('navbar-user-email').textContent = userEmail.split('@')[0];
-                document.getElementById('navbar-user-avatar').textContent = userEmail.charAt(0).toUpperCase();
-            }
-
-            generateEmail();
-        };
-
-        // Lógica de menús y modals de ayuda
-        const helpMenuButton = document.getElementById('helpMenuButton');
-        const helpDropdown = document.getElementById('helpDropdown');
-        const helpChevron = document.getElementById('helpChevron');
-        const helpModal = document.getElementById('helpModal');
-        const openHelpModalBtn = document.getElementById('openHelpModalBtn');
-        const closeHelpModalBtn = document.getElementById('closeHelpModalBtn');
-
-        let isHelpDropdownOpen = false;
-
-        function toggleHelpDropdown(show) {
-            isHelpDropdownOpen = show;
-            helpDropdown.style.display = show ? 'block' : 'none';
-            helpChevron.style.transform = show ? 'rotate(180deg)' : 'rotate(0deg)';
-        }
-
-        helpMenuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleHelpDropdown(!isHelpDropdownOpen);
-        });
-
-        document.addEventListener('click', () => {
-            if (isHelpDropdownOpen) {
-                toggleHelpDropdown(false);
-            }
-        });
-
-        function showHelpModal(show) {
-            helpModal.style.display = show ? 'flex' : 'none';
-        }
-
-        openHelpModalBtn.addEventListener('click', () => { showHelpModal(true); toggleHelpDropdown(false); });
-        closeHelpModalBtn.addEventListener('click', () => { showHelpModal(false); });
-        helpModal.addEventListener('click', (e) => { if (e.target === helpModal) { showHelpModal(false); } });
-
-        // --- DELEGACIÓN DE EVENTOS PARA EL FORMATO DE LOS EDITORES ---
-        document.getElementById('blocksContainer').addEventListener('click', (e) => {
-            // Caso 1: Clic en botones de formato
-            const btn = e.target.closest('.editor-btn');
-            if (btn) {
-                // IMPRESCINDIBLE: Previene que se pierda la selección del editor al hacer clic
-                e.preventDefault(); 
-
-                const cmd = btn.dataset.cmd;
-                const formGroup = btn.closest('.form-group');
-                const editor = formGroup ? formGroup.querySelector('.message-input') : null;
-                if (!editor) return;
-
-                // Guardamos la selección actual para poder recuperarla luego
-                savedSelection = saveSelection();
-
-                if (cmd === 'createLink') {
-                    openLinkModal();
-                } else if (cmd === 'insertImage') {
-                    openImageModal();
-                } else {
-                    restoreSelection(savedSelection);
-                    document.execCommand(cmd, false, null);
-                    generateEmail();
-                }
-                return;
-            }
-
-            // Caso 2: Clic interactivo en una imagen para reescalarla en caliente
-            if (e.target.tagName === 'IMG' && e.target.closest('.message-input')) {
-                const img = e.target;
-                const sizePresets = ['100%', '75%', '50%', '25%'];
-                
-                // Obtener el tamaño de visualización actual
-                let currentWidth = img.style.width || '100%';
-                let nextIndex = (sizePresets.indexOf(currentWidth) + 1) % sizePresets.length;
-                let nextWidth = sizePresets[nextIndex];
-
-                // Aplicar el nuevo tamaño reescalado
-                img.style.width = nextWidth;
-                img.style.height = 'auto';
-                
-                showToast(`Imagen reescalada al ${nextWidth}`);
-                generateEmail();
-            }
-        });
-
-        // Oyentes de eventos para el modal personalizado de hipervínculos
-        document.getElementById('btnCancelModal').addEventListener('click', closeLinkModal);
+    function openImageModal() {
+        const modal = document.getElementById('customImageModal');
+        document.getElementById('modalImageUrl').value = '';
+        document.getElementById('modalImageFile').value = '';
+        document.getElementById('modalImageSizePreset').value = '100%';
+        pendingImageDataUrl = '';
         
-        document.getElementById('btnSaveModal').addEventListener('click', () => {
-            let url = document.getElementById('modalLinkUrl').value.trim();
-            if (url) {
-                // Si la URL no contiene un protocolo conocido, se le antepone 'https://' por defecto
-                // para evitar que el navegador la procese como una URL relativa en GAS.
-                if (!/^(https?:\/\/|mailto:|tel:|ftp:\/\/)/i.test(url)) {
-                    url = 'https://' + url;
-                }
+        // Ocultar previsualización previa
+        document.getElementById('localImagePreview').style.display = 'none';
+        document.getElementById('localPreviewImg').src = '';
+        
+        // Activar pestaña por defecto (Local)
+        switchImageTab('local');
+        modal.style.display = 'flex';
+    }
+
+    function closeImageModal() {
+        document.getElementById('customImageModal').style.display = 'none';
+    }
+
+    function switchImageTab(type) {
+        currentImageSourceType = type;
+        const tabLocal = document.getElementById('tabLocalImage');
+        const tabUrl = document.getElementById('tabUrlImage');
+        const panelLocal = document.getElementById('panelLocalImage');
+        const panelUrl = document.getElementById('panelUrlImage');
+        if (type === 'local') {
+            tabLocal.style.backgroundColor = '#f1f5f9';
+            tabLocal.style.color = '#475569';
+            tabUrl.style.backgroundColor = 'transparent';
+            tabUrl.style.color = '#64748b';
+            panelLocal.style.display = 'block';
+            panelUrl.style.display = 'none';
+        } else {
+            tabUrl.style.backgroundColor = '#f1f5f9';
+            tabUrl.style.color = '#475569';
+            tabLocal.style.backgroundColor = 'transparent';
+            tabLocal.style.color = '#64748b';
+            panelLocal.style.display = 'none';
+            panelUrl.style.display = 'block';
+            document.getElementById('modalImageUrl').focus();
+        }
+    }
+
+    // Procesar archivo seleccionado (Local)
+    function handleImageFile(file) {
+        if (!file || !file.type.startsWith('image/')) {
+            showToast("Por favor, selecciona un archivo de imagen válido");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            pendingImageDataUrl = e.target.result;
+            
+            // Mostrar contenedor de previsualización
+            document.getElementById('localPreviewImg').src = pendingImageDataUrl;
+            document.getElementById('localPreviewName').textContent = file.name;
+            
+            // Formatear tamaño del archivo
+            const sizeKb = (file.size / 1024).toFixed(1);
+            document.getElementById('localPreviewSize').textContent = `${sizeKb} KB`;
+            document.getElementById('localImagePreview').style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    window.onload = () => {
+        const technicianSelect = document.getElementById('technicianSelect');
+        // Añadir el primer bloque de edición.
+        addBlock();
+        // Poblar el selector de técnicos dinámicamente
+        for (const id in technicians) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = technicians[id].fullName;
+            technicianSelect.appendChild(option);
+        }
+        if (loggedInTechId && technicians[loggedInTechId]) {
+            technicianSelect.value = loggedInTechId;
+            technicianSelect.disabled = true;
+        }
+        
+        // Inicializar texto de despedida
+        updateClosingTextAndGenerate();
+        // Rellenar información de usuario en navbar
+        const userEmail = loggedInTechId;
+        if (userEmail) {
+            document.getElementById('navbar-user-email').textContent = userEmail.split('@')[0];
+            document.getElementById('navbar-user-avatar').textContent = userEmail.charAt(0).toUpperCase();
+        }
+        generateEmail();
+    };
+
+    // Lógica de menús y modals de ayuda
+    const helpMenuButton = document.getElementById('helpMenuButton');
+    const helpDropdown = document.getElementById('helpDropdown');
+    const helpChevron = document.getElementById('helpChevron');
+    const helpModal = document.getElementById('helpModal');
+    const openHelpModalBtn = document.getElementById('openHelpModalBtn');
+    const closeHelpModalBtn = document.getElementById('closeHelpModalBtn');
+    let isHelpDropdownOpen = false;
+
+    function toggleHelpDropdown(show) {
+        isHelpDropdownOpen = show;
+        helpDropdown.style.display = show ? 'block' : 'none';
+        helpChevron.style.transform = show ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
+    helpMenuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleHelpDropdown(!isHelpDropdownOpen);
+    });
+
+    document.addEventListener('click', () => {
+        if (isHelpDropdownOpen) {
+            toggleHelpDropdown(false);
+        }
+    });
+
+    function showHelpModal(show) {
+        helpModal.style.display = show ? 'flex' : 'none';
+    }
+
+    openHelpModalBtn.addEventListener('click', () => { showHelpModal(true); toggleHelpDropdown(false); });
+    closeHelpModalBtn.addEventListener('click', () => { showHelpModal(false); });
+    helpModal.addEventListener('click', (e) => { if (e.target === helpModal) { showHelpModal(false); } });
+
+    // --- DELEGACIÓN DE EVENTOS PARA EL FORMATO DE LOS EDITORES ---
+    document.getElementById('blocksContainer').addEventListener('click', (e) => {
+        // Caso 1: Clic en botones de formato
+        const btn = e.target.closest('.editor-btn');
+        if (btn) {
+            // IMPRESCINDIBLE: Previene que se pierda la selección del editor al hacer clic
+            e.preventDefault(); 
+            const cmd = btn.dataset.cmd;
+            const formGroup = btn.closest('.form-group');
+            const editor = formGroup ? formGroup.querySelector('.message-input') : null;
+            if (!editor) return;
+
+            // Guardamos la selección actual para poder recuperarla luego
+            savedSelection = saveSelection();
+            if (cmd === 'createLink') {
+                openLinkModal();
+            } else if (cmd === 'insertImage') {
+                openImageModal();
+            } else {
                 restoreSelection(savedSelection);
-                document.execCommand('createLink', false, url);
+                document.execCommand(cmd, false, null);
                 generateEmail();
             }
-            closeLinkModal();
-        });
+            return;
+        }
 
-        document.getElementById('modalLinkUrl').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('btnSaveModal').click();
-            }
-        });
-
-        // --- EVENTOS DEL MODAL DE IMÁGENES ---
-        document.getElementById('tabLocalImage').addEventListener('click', () => switchImageTab('local'));
-        document.getElementById('tabUrlImage').addEventListener('click', () => switchImageTab('url'));
-        document.getElementById('btnCancelImageModal').addEventListener('click', closeImageModal);
-
-        // Disparar explorador de archivos al pulsar en la zona dropZone
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('modalImageFile');
-
-        dropZone.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleImageFile(e.target.files[0]);
-            }
-        });
-
-        // Eventos Drag and Drop en DropZone
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleImageFile(e.dataTransfer.files[0]);
-            }
-        });
-
-        // Eliminar previsualización local
-        document.getElementById('btnRemoveLocalPreview').addEventListener('click', () => {
-            pendingImageDataUrl = '';
-            fileInput.value = '';
-            document.getElementById('localImagePreview').style.display = 'none';
-            document.getElementById('localPreviewImg').src = '';
-        });
-
-        // Insertar imagen en el texto del bloque activo
-        document.getElementById('btnSaveImageModal').addEventListener('click', () => {
-            let finalImageSrc = '';
-
-            if (currentImageSourceType === 'local') {
-                if (!pendingImageDataUrl) {
-                    showToast("Por favor, selecciona o arrastra una imagen primero");
-                    return;
-                }
-                finalImageSrc = pendingImageDataUrl;
-            } else {
-                let urlVal = document.getElementById('modalImageUrl').value.trim();
-                if (!urlVal) {
-                    showToast("Por favor, introduce una dirección URL válida");
-                    return;
-                }
-                // Prevención preventiva para URLs de imágenes sin protocolo
-                if (!/^(https?:\/\/)/i.test(urlVal)) {
-                    urlVal = 'https://' + urlVal;
-                }
-                finalImageSrc = urlVal;
-            }
-
-            // Obtener el ancho elegido en el modal
-            const selectedWidth = document.getElementById('modalImageSizePreset').value;
-
-            // Construir elemento HTML de imagen con el reescalado inicial aplicado
-            const imageHtml = `<img src="${finalImageSrc}" style="max-width: 100%; width: ${selectedWidth}; height: auto; display: inline-block; margin: 8px 0;" alt="Imagen insertada">`;
-
-            // Recuperamos la selección e insertamos directamente la estructura HTML estilizada
-            restoreSelection(savedSelection);
-            document.execCommand('insertHTML', false, imageHtml);
+        // Caso 2: Clic interactivo en una imagen para reescalarla en caliente
+        if (e.target.tagName === 'IMG' && e.target.closest('.message-input')) {
+            const img = e.target;
+            const sizePresets = ['100%', '75%', '50%', '25%'];
             
+            // Obtener el tamaño de visualización actual
+            let currentWidth = img.style.width || '100%';
+            let nextIndex = (sizePresets.indexOf(currentWidth) + 1) % sizePresets.length;
+            let nextWidth = sizePresets[nextIndex];
+            // Aplicar el nuevo tamaño reescalado
+            img.style.width = nextWidth;
+            img.style.height = 'auto';
+            
+            showToast(`Imagen reescalada al ${nextWidth}`);
             generateEmail();
-            closeImageModal();
-        });
-    </script>
+        }
+    });
+
+    // Oyentes de eventos para el modal personalizado de hipervínculos
+    document.getElementById('btnCancelModal').addEventListener('click', closeLinkModal);
+    
+    document.getElementById('btnSaveModal').addEventListener('click', () => {
+        let url = document.getElementById('modalLinkUrl').value.trim();
+        if (url) {
+            // Si la URL no contiene un protocolo conocido, se le antepone 'https://' por defecto
+            // para evitar que el navegador la procese como una URL relativa en GAS.
+            if (!/^(https?:\/\/|mailto:|tel:|ftp:\/\/)/i.test(url)) {
+                url = 'https://' + url;
+            }
+            restoreSelection(savedSelection);
+            document.execCommand('createLink', false, url);
+            generateEmail();
+        }
+        closeLinkModal();
+    });
+
+    document.getElementById('modalLinkUrl').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('btnSaveModal').click();
+        }
+    });
+
+    // --- EVENTOS DEL MODAL DE IMÁGENES ---
+    document.getElementById('tabLocalImage').addEventListener('click', () => switchImageTab('local'));
+    document.getElementById('tabUrlImage').addEventListener('click', () => switchImageTab('url'));
+    document.getElementById('btnCancelImageModal').addEventListener('click', closeImageModal);
+
+    // Disparar explorador de archivos al pulsar en la zona dropZone
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('modalImageFile');
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleImageFile(e.target.files[0]);
+        }
+    });
+
+    // Eventos Drag and Drop en DropZone
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            handleImageFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    // Eliminar previsualización local
+    document.getElementById('btnRemoveLocalPreview').addEventListener('click', () => {
+        pendingImageDataUrl = '';
+        fileInput.value = '';
+        document.getElementById('localImagePreview').style.display = 'none';
+        document.getElementById('localPreviewImg').src = '';
+    });
+
+    // Insertar imagen en el texto del bloque activo
+    document.getElementById('btnSaveImageModal').addEventListener('click', () => {
+        let finalImageSrc = '';
+        if (currentImageSourceType === 'local') {
+            if (!pendingImageDataUrl) {
+                showToast("Por favor, selecciona o arrastra una imagen primero");
+                return;
+            }
+            finalImageSrc = pendingImageDataUrl;
+        } else {
+            let urlVal = document.getElementById('modalImageUrl').value.trim();
+            if (!urlVal) {
+                showToast("Por favor, introduce una dirección URL válida");
+                return;
+            }
+            // Prevención preventiva para URLs de imágenes sin protocolo
+            if (!/^(https?:\/\/)/i.test(urlVal)) {
+                urlVal = 'https://' + urlVal;
+            }
+            finalImageSrc = urlVal;
+        }
+        // Obtener el ancho elegido en el modal
+        const selectedWidth = document.getElementById('modalImageSizePreset').value;
+        // Construir elemento HTML de imagen con el reescalado inicial aplicado
+        const imageHtml = `<img src="${finalImageSrc}" style="max-width: 100%; width: ${selectedWidth}; height: auto; display: inline-block; margin: 8px 0;" alt="Imagen insertada">`;
+        
+        // Recuperamos la selección e insertamos directamente la estructura HTML estilizada
+        restoreSelection(savedSelection);
+        document.execCommand('insertHTML', false, imageHtml);
+        
+        generateEmail();
+        closeImageModal();
+    });
+</script>
 </body>
 </html>
