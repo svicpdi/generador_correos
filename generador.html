@@ -363,6 +363,26 @@
             box-shadow: 0 0 0 2px rgba(92, 6, 142, 0.2);
         }
 
+        .category-select,
+        .predefined-select {
+            color: #94a3b8 !important; /* Mismo gris que los placeholders de tus inputs */
+            border-color: #e2e8f0 !important; /* Un borde un poco más suave */
+            border: 1px solid #e2e8f0 !important; /* Gris mucho más suave que combina con tu interfaz */
+            background-color: #f8fafc !important; /* Un fondo ligerísimamente grisáceo para que no brille tanto como el blanco */
+            font-size: 0.8rem !important; /* Ligeramente más pequeño para quitarle jerarquía */
+        }
+
+        .predefined-select optgroup {
+            font-size: 0.75rem;
+            color: #64748b; /* Gris en lugar de negro */
+            background-color: #fff;
+            font-weight: 600;
+        }
+
+        .select-active {
+            color: #0f172a !important; /* El color oscuro final */
+        }
+
         /* Grid del Formulario */
         .form-row {
             display: grid;
@@ -617,7 +637,7 @@
                     <h1>Generador de Correos</h1>
                     <div class="navbar-subtitle-wrapper">
                         <h2>Soporte Vicerrectorado PDI</h2>
-                        <span class="version-badge">v1.6.0</span>
+                        <span class="version-badge">v1.6.1</span>
                     </div>
                 </div>
             </div>
@@ -977,10 +997,20 @@
 
     // Evento que se dispara al cambiar de categoría
     function updatePredefinedOptions(selectElement) {
+        // Si tiene valor seleccionado, le ponemos texto oscuro. Si vuelve a "-- Todas --", vuelve a gris.
+        if (selectElement.value !== "") {
+            selectElement.classList.add('select-active');
+        } else {
+            selectElement.classList.remove('select-active');
+        }
+
         const block = selectElement.closest('.block-item');
         const category = selectElement.value;
         const predefinedSelect = block.querySelector('.predefined-select');
         predefinedSelect.innerHTML = getPredefinedOptionsHtml(category);
+        
+        // Al cambiar la categoría, el de respuestas rápidas se resetea, así que le quitamos el color activo
+        predefinedSelect.classList.remove('select-active');
     }
 
     function addBlock() {
@@ -1006,10 +1036,10 @@
             </div>
             <div class="form-group">
                 <label style="font-size: 0.75rem; color: #64748b;">Citar texto (opcional)</label>
-                <textarea class="quote-input text-italic" rows="2" oninput="generateEmail()" placeholder="Texto de la candidatura..."></textarea>
+                <textarea class="quote-input text-italic" rows="2" oninput="generateEmail()" placeholder="Texto del remitente..."></textarea>
             </div>
 
-            <!-- Nuevos Selects Segmentados -->
+            <!-- Selects Segmentados -->
             <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 1rem;">
                 <div style="flex: 1;">
                     <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 4px;">Categoría</label>
@@ -1045,6 +1075,13 @@
     }
 
     function applyPredefinedResponse(select) {
+        // Control visual: Si selecciona la opción vacía, quitamos el color activo (vuelve a gris suave)
+        if (select.value !== "") {
+            select.classList.add('select-active');
+        } else {
+            select.classList.remove('select-active');
+        }
+
         const value = select.value;
         if (!value) return;
 
@@ -1068,22 +1105,22 @@
 
         if (responseText) {
             const textarea = block.querySelector('.message-input');
+            // Reemplaza saltos de línea por <br> para que se renderice correctamente en el div editable
             textarea.innerHTML = responseText.replace(/\n/g, '<br>');
             generateEmail();
         }
     }
 
+    // Función para eliminar un bloque específico
     function removeBlock(id) {
         const block = document.getElementById(`block-${id}`);
-        if (block) {
-            block.remove();
-            generateEmail();
-        }
+        if (block) block.remove();
+        generateEmail();
     }
 
     // Diccionario de despedidas predefinidas
     const PREDEFINED_CLOSINGS = {
-        '1': "Muchas gracias por su atención. Espero que la información facilitada le haya sido de utilidad, de lo contrario, no dude en contactarnos nuevamente.\\nSaludos y buen día.",
+        '1': "Muchas gracias por su atención. Espero que la información facilitada le haya sido de utilidad, de lo contrario, no dude en contactarnos nuevamente./nSalud y buen día.",
         '2': "Muchas gracias por su atención. Un cordial saludo.",
         '3': "Agradeciendo de antemano su colaboración, reciba un cordial saludo.",
         '4': "Muchas gracias, saludos y buen día.",
